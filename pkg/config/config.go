@@ -1,8 +1,10 @@
 package config
 
 import (
-	"gopkg.in/yaml.v3"
 	"io/ioutil"
+
+	"gopkg.in/yaml.v3"
+
 	"turkic-mythology-gateway/pkg/config/model"
 )
 
@@ -32,6 +34,6 @@ func ReadConfig(configPath string) (configmodel.Fields, error) {
 	return configFields, err
 }
 
-func (config *config) GetServerConfig() configmodel.Server {
-	return config.fields.Server
+func (c *config) GetServerConfig() configmodel.Server {
+	return c.fields.Server
 }

@@ -1,11 +1,11 @@
 package server
 
 import (
+	"github.com/gofiber/fiber/v2"
 	"log"
 	"os"
 	"os/signal"
-
-	"github.com/gofiber/fiber/v2"
+	"turkic-mythology-gateway/pkg/config"
 )
 
 type Server interface {
@@ -14,21 +14,17 @@ type Server interface {
 }
 
 type server struct {
-	port  string
-	fiber *fiber.App
+	config config.Config
+	fiber  *fiber.App
 }
 
-func NewGatewayServer(port string) Server {
+func NewGatewayServer(configInstance config.Config) Server {
 	fiberInstance := fiber.New()
 
 	return &server{
-		port:  port,
-		fiber: fiberInstance,
+		config: configInstance,
+		fiber:  fiberInstance,
 	}
-}
-
-func (s *server) GetFiberInstance() *fiber.App {
-	return s.fiber
 }
 
 func (s *server) Start() error {
@@ -39,9 +35,14 @@ func (s *server) Start() error {
 		<-shutdownChannel
 		err := s.fiber.Shutdown()
 		if err != nil {
-			log.Fatalf("Error while shutting down the server: %v", err)
+			log.Fatalf("Error while shutting down the s: %v", err)
 		}
 	}()
 
-	return s.fiber.Listen(s.port)
+	GetServerPort := s.config.GetServerConfig().Port
+	return s.fiber.Listen(GetServerPort)
+}
+
+func (s *server) GetFiberInstance() *fiber.App {
+	return s.fiber
 }

@@ -14,10 +14,8 @@ func main() {
 	}
 
 	configInstance := config.Init(configFields)
-	serverConfig := configInstance.GetServerConfig()
-
-	srv := server.NewGatewayServer(serverConfig.Port)
-	err = srv.Start()
+	gatewayServer := server.NewGatewayServer(configInstance)
+	err = gatewayServer.Start()
 	if err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}
