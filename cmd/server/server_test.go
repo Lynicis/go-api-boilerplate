@@ -2,27 +2,29 @@ package server
 
 import (
 	"fmt"
-	"testing"
-
 	"github.com/stretchr/testify/assert"
+	"testing"
+	"turkic-mythology-gateway/pkg/config"
 )
 
 func Test_Server(t *testing.T) {
+	testPath := "./testdata/config.yaml"
+	readConfig, _ := config.ReadConfig(testPath)
+	createConfig := config.Init(readConfig)
+
 	t.Run("should create server and return server", func(t *testing.T) {
-		testPort := ":8080"
-		testServer := NewGatewayServer(testPort)
+		testServer := NewGatewayServer(createConfig)
 
 		expected := &server{
-			port:  testPort,
-			fiber: testServer.GetFiberInstance(),
+			config: createConfig,
+			fiber:  testServer.GetFiberInstance(),
 		}
 
 		assert.Equal(t, expected, testServer)
 	})
 
 	t.Run("should server start and stop without error", func(t *testing.T) {
-		testPort := ":8080"
-		testServer := NewGatewayServer(testPort)
+		testServer := NewGatewayServer(createConfig)
 
 		go func() {
 			err := testServer.Start()

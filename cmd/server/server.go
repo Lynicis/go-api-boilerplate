@@ -1,10 +1,12 @@
 package server
 
 import (
-	"github.com/gofiber/fiber/v2"
 	"log"
 	"os"
 	"os/signal"
+
+	"github.com/gofiber/fiber/v2"
+
 	"turkic-mythology-gateway/pkg/config"
 )
 
