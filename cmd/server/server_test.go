@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"turkic-mythology/pkg/config"
+	"turkic-mythology/pkg/path"
 )
 
 func Test_Server(t *testing.T) {
@@ -37,7 +38,8 @@ func Test_Server(t *testing.T) {
 }
 
 func setupTestConfig() config.Config {
-	testPath := "./testdata/development.yaml"
+	basePath := path.GetProjectBasePath()
+	testPath := fmt.Sprintf("%s/testdata/development.yaml", basePath)
 	testAppEnvironment := "test"
 	readConfig, _ := config.ReadConfig(testPath)
 	createConfig := config.Init(readConfig, testAppEnvironment)

@@ -3,8 +3,7 @@ package config
 import (
 	"fmt"
 	"io/ioutil"
-	"os"
-	"path/filepath"
+	"turkic-mythology/pkg/path"
 
 	"gopkg.in/yaml.v3"
 
@@ -48,19 +47,16 @@ func (c *config) GetServerConfig() configmodel.Server {
 func (c *config) GetConfigPath() string {
 	var configPath string
 
-	getPath, _ := os.Getwd()
-	projectPath := filepath.Base(fmt.Sprintf("../../%s", getPath))
-
-	baseConfigPath := filepath.Join(projectPath, "/config")
-	configPathForPath := "pkg/config/testdata/config.yaml"
+	projectPath := path.GetProjectBasePath()
+	baseConfigPath := fmt.Sprintf("%s/config/", projectPath)
 
 	switch c.environment {
 	case "development":
-		configPath = filepath.Join(baseConfigPath, "development.yaml")
+		configPath = fmt.Sprintf("%s/development.yaml", baseConfigPath)
 	case "production":
-		configPath = filepath.Join(baseConfigPath, "production.yaml")
+		configPath = fmt.Sprintf("%s/production.yaml", baseConfigPath)
 	case "test":
-		configPath = configPathForPath
+		configPath = fmt.Sprintf("%s/pkg/config/testdata/config.yaml", projectPath)
 	}
 
 	return configPath

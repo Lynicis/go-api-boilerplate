@@ -3,13 +3,22 @@
 package config
 
 import (
+	"fmt"
+	"github.com/golang/mock/gomock"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
 	"turkic-mythology/pkg/config/model"
+	"turkic-mythology/pkg/path"
 )
 
 func Test_Config(t *testing.T) {
+	var projectBasePath = path.GetProjectBasePath()
+
+	mockController := gomock.NewController(t)
+	defer mockController.Finish()
+
 	t.Run("should create new config instance and return config instance", func(t *testing.T) {
 		testAppEnvironment := "test"
 		testConfigFields := getTestConfigFields()
@@ -34,13 +43,13 @@ func Test_Config(t *testing.T) {
 		testConfigInstance := createTestConfigInstance()
 		getConfigPath := testConfigInstance.GetConfigPath()
 
-		expectedPath := "pkg/config/testdata/config.yaml"
+		expectedPath := fmt.Sprintf("%s/pkg/config/testdata/config.yaml", projectBasePath)
 
 		assert.Equal(t, expectedPath, getConfigPath)
 	})
 
 	t.Run("should read yaml files and return marshalled config", func(t *testing.T) {
-		testPath := "./testdata/config.yaml"
+		testPath := fmt.Sprintf("%s/pkg/config/testdata/config.yaml", projectBasePath)
 
 		configFields, err := ReadConfig(testPath)
 
