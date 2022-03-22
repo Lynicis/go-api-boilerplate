@@ -34,13 +34,13 @@ func Test_Config(t *testing.T) {
 		testConfigInstance := createTestConfigInstance()
 		getConfigPath := testConfigInstance.GetConfigPath()
 
-		expectedPath := "pkg/config/testdata/development.yaml"
+		expectedPath := "pkg/config/testdata/config.yaml"
 
 		assert.Equal(t, expectedPath, getConfigPath)
 	})
 
 	t.Run("should read yaml files and return marshalled config", func(t *testing.T) {
-		testPath := "./testdata/development.yaml"
+		testPath := "./testdata/config.yaml"
 
 		configFields, err := ReadConfig(testPath)
 
