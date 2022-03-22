@@ -12,7 +12,7 @@ import (
 func Test_Server(t *testing.T) {
 	testConfig := setupTestConfig()
 
-	t.Run("should create server and return server", func(t *testing.T) {
+	t.Run("should create server instance and return server instance", func(t *testing.T) {
 		testServer := NewGatewayServer(testConfig)
 
 		expected := &server{

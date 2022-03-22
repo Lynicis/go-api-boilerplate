@@ -11,7 +11,7 @@ import (
 )
 
 func Test_Config(t *testing.T) {
-	t.Run("should create new config instance and return config", func(t *testing.T) {
+	t.Run("should create new config instance and return config instance", func(t *testing.T) {
 		testConfigFields := getTestConfigFields()
 		configInstance := Init(testConfigFields)
 
