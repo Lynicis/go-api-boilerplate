@@ -37,9 +37,10 @@ func Test_Server(t *testing.T) {
 }
 
 func setupTestConfig() config.Config {
-	testPath := "./testdata/config.yaml"
+	testPath := "./testdata/development.yaml"
+	testAppEnvironment := "test"
 	readConfig, _ := config.ReadConfig(testPath)
-	createConfig := config.Init(readConfig)
+	createConfig := config.Init(readConfig, testAppEnvironment)
 
 	return createConfig
 }

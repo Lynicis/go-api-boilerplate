@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"io/ioutil"
 
 	"gopkg.in/yaml.v3"
@@ -10,15 +11,19 @@ import (
 
 type Config interface {
 	GetServerConfig() configmodel.Server
+	GetConfigPath() string
+	GetAppEnvironment() string
 }
 
 type config struct {
-	fields configmodel.Fields
+	environment string
+	fields      configmodel.Fields
 }
 
-func Init(configFields configmodel.Fields) Config {
+func Init(configFields configmodel.Fields, appEnvironment string) Config {
 	return &config{
-		fields: configFields,
+		environment: appEnvironment,
+		fields:      configFields,
 	}
 }
 
@@ -36,4 +41,25 @@ func ReadConfig(configPath string) (configmodel.Fields, error) {
 
 func (c *config) GetServerConfig() configmodel.Server {
 	return c.fields.Server
+}
+
+func (c *config) GetConfigPath() string {
+	var configPath string
+	baseConfigPath := "config/"
+	testConfigPath := "pkg/config/testdata/development.yaml"
+
+	switch c.environment {
+	case "development":
+		configPath = fmt.Sprintf("%s/development.yaml", baseConfigPath)
+	case "production":
+		configPath = fmt.Sprintf("%s/production.yaml", baseConfigPath)
+	case "test":
+		configPath = testConfigPath
+	}
+
+	return configPath
+}
+
+func (c *config) GetAppEnvironment() string {
+	return c.environment
 }

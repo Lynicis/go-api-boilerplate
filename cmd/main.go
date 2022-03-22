@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+
 	"go.uber.org/zap"
 
 	"turkic-mythology/cmd/server"
@@ -17,13 +19,14 @@ func main() {
 		}
 	}(logger)
 
-	configPath := "config/config.yaml"
+	configPath := "config/development.yaml"
 	configFields, err := config.ReadConfig(configPath)
 	if err != nil {
 		logger.Fatal("Failed to reading config file", zap.Error(err))
 	}
 
-	configInstance := config.Init(configFields)
+	appEnvironment := os.Getenv("APP_ENVIRONMENT")
+	configInstance := config.Init(configFields, appEnvironment)
 	newServer := server.NewServer(configInstance)
 	fiberInstance := newServer.GetFiberInstance()
 
