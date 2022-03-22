@@ -1,17 +1,26 @@
 package main
 
 import (
-	"log"
+	"go.uber.org/zap"
+
 	"turkic-mythology-gateway/cmd/server"
 	"turkic-mythology-gateway/internal/healtcheck"
 	"turkic-mythology-gateway/pkg/config"
 )
 
 func main() {
+	logger, _ := zap.NewProduction()
+	defer func(logger *zap.Logger) {
+		err := logger.Sync()
+		if err != nil {
+			panic(err)
+		}
+	}(logger)
+
 	configPath := "config/config.yaml"
 	configFields, err := config.ReadConfig(configPath)
 	if err != nil {
-		log.Fatalf("Error reading config file: %s", err)
+		logger.Fatal("Failed to reading config file", zap.Error(err))
 	}
 
 	configInstance := config.Init(configFields)
@@ -22,6 +31,6 @@ func main() {
 
 	err = gatewayServer.Start()
 	if err != nil {
-		log.Fatalf("Failed to start server: %v", err)
+		logger.Fatal("Failed to start server", zap.Error(err))
 	}
 }

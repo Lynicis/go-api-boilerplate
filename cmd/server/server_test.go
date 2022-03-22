@@ -8,15 +8,13 @@ import (
 )
 
 func Test_Server(t *testing.T) {
-	testPath := "./testdata/config.yaml"
-	readConfig, _ := config.ReadConfig(testPath)
-	createConfig := config.Init(readConfig)
+	testConfig := setupTestConfig()
 
 	t.Run("should create server and return server", func(t *testing.T) {
-		testServer := NewGatewayServer(createConfig)
+		testServer := NewGatewayServer(testConfig)
 
 		expected := &server{
-			config: createConfig,
+			config: testConfig,
 			fiber:  testServer.GetFiberInstance(),
 		}
 
@@ -24,7 +22,7 @@ func Test_Server(t *testing.T) {
 	})
 
 	t.Run("should server start and stop without error", func(t *testing.T) {
-		testServer := NewGatewayServer(createConfig)
+		testServer := NewGatewayServer(testConfig)
 
 		go func() {
 			err := testServer.Start()
@@ -34,4 +32,12 @@ func Test_Server(t *testing.T) {
 			}
 		}()
 	})
+}
+
+func setupTestConfig() config.Config {
+	testPath := "./testdata/config.yaml"
+	readConfig, _ := config.ReadConfig(testPath)
+	createConfig := config.Init(readConfig)
+
+	return createConfig
 }
