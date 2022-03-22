@@ -20,7 +20,7 @@ type server struct {
 	fiber  *fiber.App
 }
 
-func NewGatewayServer(configInstance config.Config) Server {
+func NewServer(configInstance config.Config) Server {
 	fiberInstance := fiber.New()
 
 	return &server{

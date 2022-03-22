@@ -24,13 +24,13 @@ func main() {
 	}
 
 	configInstance := config.Init(configFields)
-	gatewayServer := server.NewGatewayServer(configInstance)
-	gatewayFiberInstance := gatewayServer.GetFiberInstance()
+	newServer := server.NewServer(configInstance)
+	fiberInstance := newServer.GetFiberInstance()
 
-	gatewayFiberInstance.Get("/health", healtcheck.GetStatus)
+	fiberInstance.Get("/health", healtcheck.GetStatus)
 
-	err = gatewayServer.Start()
+	err = newServer.Start()
 	if err != nil {
-		logger.Fatal("Failed to start server", zap.Error(err))
+		logger.Fatal("Failed to start newServer", zap.Error(err))
 	}
 }

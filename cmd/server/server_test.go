@@ -13,7 +13,7 @@ func Test_Server(t *testing.T) {
 	testConfig := setupTestConfig()
 
 	t.Run("should create server instance and return server instance", func(t *testing.T) {
-		testServer := NewGatewayServer(testConfig)
+		testServer := NewServer(testConfig)
 
 		expected := &server{
 			config: testConfig,
@@ -24,7 +24,7 @@ func Test_Server(t *testing.T) {
 	})
 
 	t.Run("should server start and stop without error", func(t *testing.T) {
-		testServer := NewGatewayServer(testConfig)
+		testServer := NewServer(testConfig)
 
 		go func() {
 			err := testServer.Start()
