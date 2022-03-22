@@ -7,7 +7,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 
-	"turkic-mythology-gateway/pkg/config"
+	"turkic-mythology/pkg/config"
 )
 
 type Server interface {

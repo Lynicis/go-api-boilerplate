@@ -1,11 +1,13 @@
+//go:build unit
+
 package config
 
 import (
 	"testing"
 
-	"turkic-mythology-gateway/pkg/config/model"
-
 	"github.com/stretchr/testify/assert"
+
+	"turkic-mythology/pkg/config/model"
 )
 
 func Test_Config(t *testing.T) {

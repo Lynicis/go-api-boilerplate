@@ -1,4 +1,4 @@
-module turkic-mythology-gateway
+module turkic-mythology
 
 go 1.17
 

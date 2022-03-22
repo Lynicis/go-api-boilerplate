@@ -5,7 +5,7 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"turkic-mythology-gateway/pkg/config/model"
+	"turkic-mythology/pkg/config/model"
 )
 
 type Config interface {

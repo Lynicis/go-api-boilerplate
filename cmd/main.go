@@ -3,9 +3,9 @@ package main
 import (
 	"go.uber.org/zap"
 
-	"turkic-mythology-gateway/cmd/server"
-	"turkic-mythology-gateway/internal/healtcheck"
-	"turkic-mythology-gateway/pkg/config"
+	"turkic-mythology/cmd/server"
+	"turkic-mythology/internal/healtcheck"
+	"turkic-mythology/pkg/config"
 )
 
 func main() {

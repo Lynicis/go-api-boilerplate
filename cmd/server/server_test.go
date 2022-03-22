@@ -1,10 +1,12 @@
+//go:build unit
+
 package server
 
 import (
 	"fmt"
 	"github.com/stretchr/testify/assert"
 	"testing"
-	"turkic-mythology-gateway/pkg/config"
+	"turkic-mythology/pkg/config"
 )
 
 func Test_Server(t *testing.T) {
