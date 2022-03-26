@@ -10,15 +10,22 @@ on:
 
 jobs:
 
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions@checkout@v2
+
+      - uses: ./.github/actions/go-cache/go-cache.yaml
+
+      - name: Linting
+        run: go fmt ./...
+
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set up Go
-        uses: magnetikonline/action-golang-cache@v2
-        with:
-          go-version: 1.17.8
+      - uses: ./.github/actions/go-cache/go-cache.yaml
 
       - name: Build
         run: go build ./...
@@ -31,10 +38,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set up Go
-        uses: magnetikonline/action-golang-cache@v2
-        with:
-          go-version: 1.17.8
+      - uses: ./.github/actions/go-cache/go-cache.yaml
 
       - name: Test
         run: go test -tags=unit ./...
