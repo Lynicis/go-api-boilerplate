@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions@checkout@v2
 
-      - uses: ../actions/go-cache/go-cache.yaml
+      - uses: lynicis/go-rest-api-boilerplate/.github/actions/go-cache/go-cache.yaml@master
 
       - name: Linting
         run: go fmt ./...
@@ -25,7 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: ../actions/go-cache/go-cache.yaml
+      - uses: lynicis/go-rest-api-boilerplate/.github/actions/go-cache/go-cache.yaml@master
 
       - name: Build
         run: go build ./...
@@ -38,7 +38,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: ../actions/go-cache/go-cache.yaml
+      - uses: lynicis/go-rest-api-boilerplate/.github/actions/go-cache/go-cache.yaml@master
 
       - name: Test
         run: go test -tags=unit ./...
