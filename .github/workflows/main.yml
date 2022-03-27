@@ -4,24 +4,30 @@ on:
   push:
     branches:
       - master
-  pull_request:
-    branches:
-      - master
 
 jobs:
 
-  build:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set up Go
-        uses: magnetikonline/action-golang-cache@v2
-        with:
-          go-version: 1.17.8
+      - uses: ./.github/actions/go-cache
+
+      - name: Linting
+        run: go fmt ./...
+
+  build:
+    needs:
+      - lint
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: ./.github/actions/go-cache
 
       - name: Build
-        uses: ./go-cache.yaml
         run: go build ./...
 
   unit-test:
@@ -32,10 +38,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set up Go
-      uses: magnetikonline/action-golang-cache@v2
-        with:
-          go-version: 1.17.8
+      - uses: ./.github/actions/go-cache
 
       - name: Test
         run: go test -tags=unit ./...
