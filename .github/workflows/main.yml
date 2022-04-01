@@ -54,13 +54,11 @@ jobs:
       - uses: ./.github/actions/go-cache
 
       - name: Generate coverage report
-        run: |
-          go install github.com/jstemmer/go-junit-report@latest
-          go test -tags=unit ./... | go-junit-report > report.xml
+        run: go test -tags=unit -coverprofile=coverage.txt -covermode=atomic ./...
 
       - uses: codecov/codecov-action@v2
         with:
           token: ${{ secrets.CODECOV_SECRET_KEY }}
-          files: ./report.xml
+          files: ./coverage.txt
           fail_ci_if_error: true
           flags: unit
