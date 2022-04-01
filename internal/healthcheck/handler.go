@@ -1,4 +1,4 @@
-package healtcheck
+package healthcheck
 
 import "github.com/gofiber/fiber/v2"
 

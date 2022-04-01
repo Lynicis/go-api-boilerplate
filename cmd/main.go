@@ -1,17 +1,16 @@
 package main
 
 import (
+	"go-rest-api-boilerplate/pkg/config"
+	"go.uber.org/zap"
 	"os"
 
-	"go.uber.org/zap"
-
-	"turkic-mythology/cmd/server"
-	"turkic-mythology/internal/healtcheck"
-	"turkic-mythology/pkg/config"
+	"go-rest-api-boilerplate/cmd/server"
+	"go-rest-api-boilerplate/internal/healthcheck"
 )
 
 func main() {
-	logger, _ := zap.NewProduction()
+	logger, _ := zap.NewProduction() //todo: separate to domain
 	defer func(logger *zap.Logger) {
 		err := logger.Sync()
 		if err != nil {
@@ -19,21 +18,26 @@ func main() {
 		}
 	}(logger)
 
-	configPath := "config/development.yaml"
-	configFields, err := config.ReadConfig(configPath)
+	getEnvironment := os.Getenv("APP_ENV")
+	configPath, err := config.GetConfigPath(getEnvironment)
 	if err != nil {
-		logger.Fatal("Failed to reading config file", zap.Error(err))
+		logger.Fatal("Failed to read environment variable", zap.Error(err))
 	}
 
-	appEnvironment := os.Getenv("APP_ENVIRONMENT")
-	configInstance := config.Init(configFields, appEnvironment)
-	newServer := server.NewServer(configInstance)
-	fiberInstance := newServer.GetFiberInstance()
-
-	fiberInstance.Get("/health", healtcheck.GetStatus)
-
-	err = newServer.Start()
+	readConfig, err := config.ReadConfig(configPath)
 	if err != nil {
-		logger.Fatal("Failed to start newServer", zap.Error(err))
+		logger.Fatal("Failed to read config file", zap.Error(err))
+	}
+
+	configInstance := config.Init(readConfig, getEnvironment)
+
+	serverInstance := server.NewServer(configInstance)
+	fiberInstance := serverInstance.GetFiberInstance()
+
+	fiberInstance.Get("/health", healthcheck.GetStatus)
+
+	err = serverInstance.Start()
+	if err != nil {
+		logger.Fatal("Failed to start server", zap.Error(err))
 	}
 }

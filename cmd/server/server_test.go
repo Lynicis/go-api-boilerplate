@@ -4,24 +4,25 @@ package server
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
+	"github.com/golang/mock/gomock"
+	configmock "go-rest-api-boilerplate/pkg/config/mock"
 	"testing"
-	"turkic-mythology/pkg/config"
-	"turkic-mythology/pkg/path"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_Server(t *testing.T) {
-	testConfig := setupTestConfig()
+	mockController := gomock.NewController(t)
+	defer mockController.Finish()
+
+	testConfig := configmock.NewMockConfig(mockController)
 
 	t.Run("should create server instance and return server instance", func(t *testing.T) {
 		testServer := NewServer(testConfig)
 
-		expected := &server{
-			config: testConfig,
-			fiber:  testServer.GetFiberInstance(),
-		}
+		expected := &server{}
 
-		assert.Equal(t, expected, testServer)
+		assert.IsType(t, expected, testServer)
 	})
 
 	t.Run("should server start and stop without error", func(t *testing.T) {
@@ -35,14 +36,4 @@ func Test_Server(t *testing.T) {
 			}
 		}()
 	})
-}
-
-func setupTestConfig() config.Config {
-	basePath := path.GetProjectBasePath()
-	testPath := fmt.Sprintf("%s/testdata/development.yaml", basePath)
-	testAppEnvironment := "test"
-	readConfig, _ := config.ReadConfig(testPath)
-	createConfig := config.Init(readConfig, testAppEnvironment)
-
-	return createConfig
 }

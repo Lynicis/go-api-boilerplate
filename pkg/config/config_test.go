@@ -4,32 +4,25 @@ package config
 
 import (
 	"fmt"
-	"github.com/golang/mock/gomock"
+	configmodel "go-rest-api-boilerplate/pkg/config/model"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 
-	"turkic-mythology/pkg/config/model"
-	"turkic-mythology/pkg/path"
+	"go-rest-api-boilerplate/pkg/path"
 )
 
 func Test_Config(t *testing.T) {
 	var projectBasePath = path.GetProjectBasePath()
-
-	mockController := gomock.NewController(t)
-	defer mockController.Finish()
 
 	t.Run("should create new config instance and return config instance", func(t *testing.T) {
 		testAppEnvironment := "test"
 		testConfigFields := getTestConfigFields()
 		configInstance := Init(testConfigFields, testAppEnvironment)
 
-		expected := &config{
-			environment: testAppEnvironment,
-			fields:      testConfigFields,
-		}
+		expected := &config{}
 
-		assert.Equal(t, expected, configInstance)
+		assert.IsType(t, expected, configInstance)
 	})
 
 	t.Run("should return app environment", func(t *testing.T) {
@@ -40,8 +33,8 @@ func Test_Config(t *testing.T) {
 	})
 
 	t.Run("should handle config path with app environment variable and return config path", func(t *testing.T) {
-		testConfigInstance := createTestConfigInstance()
-		getConfigPath := testConfigInstance.GetConfigPath()
+		getConfigPath, err := GetConfigPath("test")
+		assert.Nil(t, err)
 
 		expectedPath := fmt.Sprintf("%s/pkg/config/testdata/config.yaml", projectBasePath)
 
@@ -64,7 +57,10 @@ func Test_Config(t *testing.T) {
 func getTestConfigFields() configmodel.Fields {
 	return configmodel.Fields{
 		Server: configmodel.Server{
-			Port: ":1234",
+			Port: 1234,
+		},
+		RPCServer: configmodel.RPCServer{
+			Port: 5678,
 		},
 	}
 }
@@ -72,7 +68,5 @@ func getTestConfigFields() configmodel.Fields {
 func createTestConfigInstance() Config {
 	testAppEnvironment := "test"
 	testConfigFields := getTestConfigFields()
-	configInstance := Init(testConfigFields, testAppEnvironment)
-
-	return configInstance
+	return Init(testConfigFields, testAppEnvironment)
 }

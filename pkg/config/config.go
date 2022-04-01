@@ -2,17 +2,19 @@ package config
 
 import (
 	"fmt"
+	"go-rest-api-boilerplate/pkg/path"
+	"io/fs"
 	"io/ioutil"
-	"turkic-mythology/pkg/path"
+	"os"
 
 	"gopkg.in/yaml.v3"
 
-	"turkic-mythology/pkg/config/model"
+	configmodel "go-rest-api-boilerplate/pkg/config/model"
 )
 
 type Config interface {
 	GetServerConfig() configmodel.Server
-	GetConfigPath() string
+	GetRPCConfig() configmodel.RPCServer
 	GetAppEnvironment() string
 }
 
@@ -28,40 +30,50 @@ func Init(configFields configmodel.Fields, appEnvironment string) Config {
 	}
 }
 
-func ReadConfig(configPath string) (configmodel.Fields, error) {
-	unmarshalledConfig, err := ioutil.ReadFile(configPath)
-	if err != nil {
-		return configmodel.Fields{}, err
-	}
-
-	var configFields configmodel.Fields
-	err = yaml.Unmarshal(unmarshalledConfig, &configFields)
-
-	return configFields, err
-}
-
-func (c *config) GetServerConfig() configmodel.Server {
-	return c.fields.Server
-}
-
-func (c *config) GetConfigPath() string {
+func GetConfigPath(environment string) (string, error) {
 	var configPath string
 
 	projectPath := path.GetProjectBasePath()
 	baseConfigPath := fmt.Sprintf("%s/config/", projectPath)
 
-	switch c.environment {
-	case "development":
+	switch environment {
+	case "local":
 		configPath = fmt.Sprintf("%s/development.yaml", baseConfigPath)
-	case "production":
+	case "prod":
 		configPath = fmt.Sprintf("%s/production.yaml", baseConfigPath)
 	case "test":
 		configPath = fmt.Sprintf("%s/pkg/config/testdata/config.yaml", projectPath)
+	default:
+		return "", fmt.Errorf("you must define valid app environment in environment variables")
 	}
 
-	return configPath
+	return configPath, nil
 }
 
-func (c *config) GetAppEnvironment() string {
-	return c.environment
+func ReadConfig(configPath string) (configmodel.Fields, error) {
+	if _, err := os.Stat(configPath); err != nil {
+		return configmodel.Fields{}, fs.ErrNotExist
+	}
+
+	unmarshalledConfig, err := ioutil.ReadFile(configPath)
+	if err != nil {
+		return configmodel.Fields{}, fs.ErrInvalid
+	}
+
+	var configFields configmodel.Fields
+	_ = yaml.Unmarshal(unmarshalledConfig, &configFields)
+
+	return configFields, nil
+}
+
+func (config *config) GetServerConfig() configmodel.Server {
+	return config.fields.Server
+}
+
+func (config *config) GetRPCConfig() configmodel.RPCServer {
+	return config.fields.RPCServer
+}
+
+func (config *config) GetAppEnvironment() string {
+	return config.environment
 }

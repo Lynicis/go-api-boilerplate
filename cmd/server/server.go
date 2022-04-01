@@ -1,13 +1,14 @@
 package server
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
 
 	"github.com/gofiber/fiber/v2"
 
-	"turkic-mythology/pkg/config"
+	"go-rest-api-boilerplate/pkg/config"
 )
 
 type Server interface {
@@ -29,22 +30,22 @@ func NewServer(configInstance config.Config) Server {
 	}
 }
 
-func (s *server) Start() error {
+func (server *server) Start() error {
 	shutdownChannel := make(chan os.Signal, 1)
 	signal.Notify(shutdownChannel, os.Interrupt)
 
 	go func() {
 		<-shutdownChannel
-		err := s.fiber.Shutdown()
+		err := server.fiber.Shutdown()
 		if err != nil {
-			log.Fatalf("Error while shutting down the s: %v", err)
+			log.Fatalf("Error while shutting down the server: %v", err)
 		}
 	}()
 
-	GetServerPort := s.config.GetServerConfig().Port
-	return s.fiber.Listen(GetServerPort)
+	serverConfig := fmt.Sprintf(":%d", server.config.GetServerConfig().Port)
+	return server.fiber.Listen(serverConfig)
 }
 
-func (s *server) GetFiberInstance() *fiber.App {
-	return s.fiber
+func (server *server) GetFiberInstance() *fiber.App {
+	return server.fiber
 }
