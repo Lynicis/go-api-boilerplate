@@ -12,46 +12,80 @@ import (
 	"go-rest-api-boilerplate/pkg/path"
 )
 
-func Test_Config(t *testing.T) {
-	var projectBasePath = path.GetProjectBasePath()
+func TestInit(t *testing.T) {
+	testAppEnvironment := "test"
+	testConfigFields := getTestConfigFields()
+	configInstance := Init(testConfigFields, testAppEnvironment)
 
-	t.Run("should create new config instance and return config instance", func(t *testing.T) {
-		testAppEnvironment := "test"
-		testConfigFields := getTestConfigFields()
-		configInstance := Init(testConfigFields, testAppEnvironment)
+	expected := &config{}
 
-		expected := &config{}
+	assert.IsType(t, expected, configInstance)
+}
 
-		assert.IsType(t, expected, configInstance)
-	})
+func TestConfig_GetAppEnvironment(t *testing.T) {
+	testConfigInstance := createTestConfigInstance()
+	getAppEnvironment := testConfigInstance.GetAppEnvironment()
 
-	t.Run("should return app environment", func(t *testing.T) {
-		testConfigInstance := createTestConfigInstance()
-		getAppEnvironment := testConfigInstance.GetAppEnvironment()
+	assert.Equal(t, "test", getAppEnvironment)
+}
 
-		assert.Equal(t, "test", getAppEnvironment)
-	})
+func TestConfig_GetServerConfig(t *testing.T) {
+	testPath := getTestPath()
+	configFields, err := ReadConfig(testPath)
 
-	t.Run("should handle config path with app environment variable and return config path", func(t *testing.T) {
-		getConfigPath, err := GetConfigPath("test")
-		assert.Nil(t, err)
+	assert.Nil(t, err)
 
-		expectedPath := fmt.Sprintf("%s/pkg/config/testdata/config.yaml", projectBasePath)
+	testConfigInstance := Init(configFields, "test")
+	testServerConfig := testConfigInstance.GetServerConfig()
 
-		assert.Equal(t, expectedPath, getConfigPath)
-	})
+	expectedServerConfig := configmodel.Server{}
 
-	t.Run("should read yaml files and return marshalled config", func(t *testing.T) {
-		testPath := fmt.Sprintf("%s/pkg/config/testdata/config.yaml", projectBasePath)
+	assert.NotNil(t, testServerConfig)
+	assert.IsType(t, testServerConfig, expectedServerConfig)
+}
 
-		configFields, err := ReadConfig(testPath)
+func TestConfig_GetRPCConfig(t *testing.T) {
+	testPath := getTestPath()
+	configFields, err := ReadConfig(testPath)
 
-		assert.Nil(t, err)
-		assert.NotNil(t, configFields)
+	assert.Nil(t, err)
 
-		testConfigFields := getTestConfigFields()
-		assert.Equal(t, testConfigFields, configFields)
-	})
+	testConfigInstance := Init(configFields, "test")
+	testRPCConfig := testConfigInstance.GetRPCConfig()
+
+	expectedRPCConfig := configmodel.RPCServer{}
+
+	assert.NotNil(t, testRPCConfig)
+	assert.IsType(t, testRPCConfig, expectedRPCConfig)
+}
+
+func TestGetConfigPath(t *testing.T) {
+	getLocalConfigPath, err := GetConfigPath("local")
+	assert.Nil(t, err)
+	assert.Regexp(t, ".yaml$", getLocalConfigPath)
+
+	getProductionConfigPath, err := GetConfigPath("prod")
+	assert.Nil(t, err)
+	assert.Regexp(t, "yaml$", getProductionConfigPath)
+
+	getTestConfigPath, err := GetConfigPath("test")
+	assert.Nil(t, err)
+	assert.Regexp(t, ".yaml$", getTestConfigPath)
+}
+
+func TestReadConfig(t *testing.T) {
+	testPath := getTestPath()
+	readConfig, err := ReadConfig(testPath)
+
+	assert.Nil(t, err)
+
+	expectedConfig := configmodel.Fields{}
+
+	assert.NotNil(t, readConfig)
+	assert.IsType(t, readConfig, expectedConfig)
+
+	testConfigFields := getTestConfigFields()
+	assert.Equal(t, testConfigFields, readConfig)
 }
 
 func getTestConfigFields() configmodel.Fields {
@@ -69,4 +103,9 @@ func createTestConfigInstance() Config {
 	testAppEnvironment := "test"
 	testConfigFields := getTestConfigFields()
 	return Init(testConfigFields, testAppEnvironment)
+}
+
+func getTestPath() string {
+	var projectBasePath = path.GetProjectBasePath()
+	return fmt.Sprintf("%s/pkg/config/testdata/config.yaml", projectBasePath)
 }
