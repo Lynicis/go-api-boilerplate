@@ -3,15 +3,16 @@
 package server
 
 import (
-	"fmt"
-	"github.com/golang/mock/gomock"
-	configmock "go-rest-api-boilerplate/pkg/config/mock"
 	"testing"
 
+	"github.com/gofiber/fiber/v2"
+	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
+
+	configmock "go-rest-api-boilerplate/pkg/config/mock"
 )
 
-func Test_Server(t *testing.T) {
+func TestNewServer(t *testing.T) {
 	mockController := gomock.NewController(t)
 	defer mockController.Finish()
 
@@ -27,13 +28,28 @@ func Test_Server(t *testing.T) {
 
 	t.Run("should server start and stop without error", func(t *testing.T) {
 		testServer := NewServer(testConfig)
-
 		go func() {
 			err := testServer.Start()
-			if err != nil {
-				fmt.Println(err)
-				t.Fail()
-			}
+			assert.Nil(t, err)
+		}()
+
+		go func() {
+			err := testServer.Stop()
+			assert.Nil(t, err)
 		}()
 	})
+}
+
+func TestServer_GetFiberInstance(t *testing.T) {
+	mockController := gomock.NewController(t)
+	defer mockController.Finish()
+
+	testConfig := configmock.NewMockConfig(mockController)
+
+	testServer := NewServer(testConfig)
+	fiberInstance := testServer.GetFiberInstance()
+
+	expected := &fiber.App{}
+
+	assert.IsType(t, expected, fiberInstance)
 }

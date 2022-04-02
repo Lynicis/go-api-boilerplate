@@ -2,9 +2,9 @@ package server
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"os/signal"
+	"syscall"
 
 	"github.com/gofiber/fiber/v2"
 
@@ -14,6 +14,7 @@ import (
 type Server interface {
 	GetFiberInstance() *fiber.App
 	Start() error
+	Stop() error
 }
 
 type server struct {
@@ -32,18 +33,22 @@ func NewServer(configInstance config.Config) Server {
 
 func (server *server) Start() error {
 	shutdownChannel := make(chan os.Signal, 1)
-	signal.Notify(shutdownChannel, os.Interrupt)
+	signal.Notify(shutdownChannel, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
 	go func() {
 		<-shutdownChannel
 		err := server.fiber.Shutdown()
 		if err != nil {
-			log.Fatalf("Error while shutting down the server: %v", err)
+			panic(err)
 		}
 	}()
 
 	serverConfig := fmt.Sprintf(":%d", server.config.GetServerConfig().Port)
 	return server.fiber.Listen(serverConfig)
+}
+
+func (server *server) Stop() error {
+	return server.fiber.Shutdown()
 }
 
 func (server *server) GetFiberInstance() *fiber.App {

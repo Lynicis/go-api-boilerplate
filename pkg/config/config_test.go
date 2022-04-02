@@ -60,17 +60,28 @@ func TestConfig_GetRPCConfig(t *testing.T) {
 }
 
 func TestGetConfigPath(t *testing.T) {
-	getLocalConfigPath, err := GetConfigPath("local")
-	assert.Nil(t, err)
-	assert.Regexp(t, ".yaml$", getLocalConfigPath)
+	t.Run("should return local config path", func(t *testing.T) {
+		getLocalConfigPath, err := GetConfigPath("local")
+		assert.Nil(t, err)
+		assert.Regexp(t, ".yaml$", getLocalConfigPath)
+	})
 
-	getProductionConfigPath, err := GetConfigPath("prod")
-	assert.Nil(t, err)
-	assert.Regexp(t, "yaml$", getProductionConfigPath)
+	t.Run("should return prod config path", func(t *testing.T) {
+		getProductionConfigPath, err := GetConfigPath("prod")
+		assert.Nil(t, err)
+		assert.Regexp(t, "yaml$", getProductionConfigPath)
+	})
 
-	getTestConfigPath, err := GetConfigPath("test")
-	assert.Nil(t, err)
-	assert.Regexp(t, ".yaml$", getTestConfigPath)
+	t.Run("should return test config path", func(t *testing.T) {
+		getTestConfigPath, err := GetConfigPath("test")
+		assert.Nil(t, err)
+		assert.Regexp(t, ".yaml$", getTestConfigPath)
+	})
+
+	t.Run("should return error with wrong environment variable", func(t *testing.T) {
+		_, err := GetConfigPath("invalid")
+		assert.NotNil(t, err)
+	})
 }
 
 func TestReadConfig(t *testing.T) {
