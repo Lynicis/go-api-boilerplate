@@ -15,7 +15,7 @@ func Test_HealthCheckHandler(t *testing.T) {
 	testServer.Get("/health", GetStatus)
 
 	request := httptest.NewRequest(fiber.MethodGet, "/health", nil)
-	response, err := testServer.Test(request, 5)
+	response, err := testServer.Test(request, 1)
 
 	assert.Nil(t, err)
 	assert.Equal(t, fiber.StatusOK, response.StatusCode)

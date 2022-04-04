@@ -5,6 +5,7 @@ package config
 import (
 	"fmt"
 	configmodel "go-rest-api-boilerplate/pkg/config/model"
+	"io/fs"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -30,7 +31,7 @@ func TestConfig_GetAppEnvironment(t *testing.T) {
 }
 
 func TestConfig_GetServerConfig(t *testing.T) {
-	testPath := getTestPath()
+	testPath := getTestPath("config.yaml")
 	configFields, err := ReadConfig(testPath)
 
 	assert.Nil(t, err)
@@ -45,7 +46,7 @@ func TestConfig_GetServerConfig(t *testing.T) {
 }
 
 func TestConfig_GetRPCConfig(t *testing.T) {
-	testPath := getTestPath()
+	testPath := getTestPath("config.yaml")
 	configFields, err := ReadConfig(testPath)
 
 	assert.Nil(t, err)
@@ -85,18 +86,25 @@ func TestGetConfigPath(t *testing.T) {
 }
 
 func TestReadConfig(t *testing.T) {
-	testPath := getTestPath()
-	readConfig, err := ReadConfig(testPath)
+	t.Run("should read config file and return config model", func(t *testing.T) {
+		testPath := getTestPath("config.yaml")
+		readConfig, err := ReadConfig(testPath)
 
-	assert.Nil(t, err)
+		expectedConfig := configmodel.Fields{}
 
-	expectedConfig := configmodel.Fields{}
+		assert.Nil(t, err)
+		assert.IsType(t, readConfig, expectedConfig)
+	})
 
-	assert.NotNil(t, readConfig)
-	assert.IsType(t, readConfig, expectedConfig)
+	t.Run("should if config file is not exist return error", func(t *testing.T) {
+		testPath := getTestPath("invalid-config.yaml")
+		_, err := ReadConfig(testPath)
 
-	testConfigFields := getTestConfigFields()
-	assert.Equal(t, testConfigFields, readConfig)
+		expected := &fs.PathError{}
+
+		assert.NotNil(t, err)
+		assert.IsType(t, expected, err)
+	})
 }
 
 func getTestConfigFields() configmodel.Fields {
@@ -116,7 +124,7 @@ func createTestConfigInstance() Config {
 	return Init(testConfigFields, testAppEnvironment)
 }
 
-func getTestPath() string {
+func getTestPath(filename string) string {
 	var projectBasePath = path.GetProjectBasePath()
-	return fmt.Sprintf("%s/pkg/config/testdata/config.yaml", projectBasePath)
+	return fmt.Sprintf("%s/pkg/config/testdata/%s", projectBasePath, filename)
 }

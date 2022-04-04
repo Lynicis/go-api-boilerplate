@@ -3,11 +3,8 @@ package config
 import (
 	"fmt"
 	"go-rest-api-boilerplate/pkg/path"
-	"io/fs"
-	"io/ioutil"
-	"os"
-
 	"gopkg.in/yaml.v3"
+	"io/ioutil"
 
 	configmodel "go-rest-api-boilerplate/pkg/config/model"
 )
@@ -51,13 +48,9 @@ func GetConfigPath(environment string) (string, error) {
 }
 
 func ReadConfig(configPath string) (configmodel.Fields, error) {
-	if _, err := os.Stat(configPath); err != nil {
-		return configmodel.Fields{}, fs.ErrNotExist
-	}
-
 	unmarshalledConfig, err := ioutil.ReadFile(configPath)
 	if err != nil {
-		return configmodel.Fields{}, fs.ErrInvalid
+		return configmodel.Fields{}, err
 	}
 
 	var configFields configmodel.Fields

@@ -1,16 +1,17 @@
 package main
 
 import (
-	"go-rest-api-boilerplate/pkg/config"
-	"go.uber.org/zap"
 	"os"
 
-	"go-rest-api-boilerplate/cmd/server"
+	"go.uber.org/zap"
+
 	"go-rest-api-boilerplate/internal/healthcheck"
+	"go-rest-api-boilerplate/pkg/config"
+	"go-rest-api-boilerplate/pkg/server"
 )
 
 func main() {
-	logger, _ := zap.NewProduction() //todo: separate to domain
+	logger, _ := zap.NewProduction()
 	defer func(logger *zap.Logger) {
 		err := logger.Sync()
 		if err != nil {

@@ -14,7 +14,6 @@ import (
 type Server interface {
 	GetFiberInstance() *fiber.App
 	Start() error
-	Stop() error
 }
 
 type server struct {
@@ -43,12 +42,8 @@ func (server *server) Start() error {
 		}
 	}()
 
-	serverConfig := fmt.Sprintf(":%d", server.config.GetServerConfig().Port)
-	return server.fiber.Listen(serverConfig)
-}
-
-func (server *server) Stop() error {
-	return server.fiber.Shutdown()
+	serverConfig := server.config.GetServerConfig()
+	return server.fiber.Listen(fmt.Sprintf(":%d", serverConfig.Port))
 }
 
 func (server *server) GetFiberInstance() *fiber.App {
