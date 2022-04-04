@@ -3,7 +3,6 @@
 package server
 
 import (
-	configmodel "go-rest-api-boilerplate/pkg/config/model"
 	"net/http/httptest"
 	"testing"
 
@@ -18,9 +17,8 @@ func TestNewServer(t *testing.T) {
 	mockController := gomock.NewController(t)
 	defer mockController.Finish()
 
-	testConfig := configmock.NewMockConfig(mockController)
-
 	t.Run("should create server instance and return server instance", func(t *testing.T) {
+		testConfig := configmock.NewMockConfig(mockController)
 		testServer := NewServer(testConfig)
 
 		expected := &server{}
@@ -30,12 +28,8 @@ func TestNewServer(t *testing.T) {
 	})
 
 	t.Run("should server start without error", func(t *testing.T) {
+		testConfig := configmock.NewMockConfig(mockController)
 		testServer := NewServer(testConfig)
-
-		testConfig.
-			EXPECT().
-			GetServerConfig().
-			Return(configmodel.Server{Port: 8090})
 
 		go func() {
 			err := testServer.Start()
