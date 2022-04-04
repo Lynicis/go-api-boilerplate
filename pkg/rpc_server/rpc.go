@@ -5,12 +5,14 @@ import (
 	"go-rest-api-boilerplate/pkg/config"
 	"google.golang.org/grpc"
 	"net"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 type RPCServer interface {
 	GetRPCServer() *grpc.Server
 	StartServer() error
-	Stop()
 }
 
 type rpcServer struct {
@@ -31,15 +33,19 @@ func (rpcServer *rpcServer) GetRPCServer() *grpc.Server {
 }
 
 func (rpcServer *rpcServer) StartServer() error {
-	rpcServerPort := fmt.Sprintf(":%d", rpcServer.config.GetRPCConfig().Port)
-	tcpServer, err := net.Listen("tcp", rpcServerPort)
+	shutdownChannel := make(chan os.Signal, 1)
+	signal.Notify(shutdownChannel, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+
+	go func() {
+		<-shutdownChannel
+		rpcServer.server.Stop()
+	}()
+
+	rpcConfig := rpcServer.config.GetRPCConfig()
+	tcpServer, err := net.Listen("tcp", fmt.Sprintf(":%d", rpcConfig.Port))
 	if err != nil {
 		return err
 	}
 
 	return rpcServer.server.Serve(tcpServer)
-}
-
-func (rpcServer *rpcServer) Stop() {
-	rpcServer.server.GracefulStop() //todo: need to graceful shutdown
 }

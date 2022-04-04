@@ -5,7 +5,6 @@ import (
 
 	"go.uber.org/zap"
 
-	"go-rest-api-boilerplate/internal/healthcheck"
 	"go-rest-api-boilerplate/pkg/config"
 	"go-rest-api-boilerplate/pkg/server"
 )
@@ -35,7 +34,7 @@ func main() {
 	serverInstance := server.NewServer(configInstance)
 	fiberInstance := serverInstance.GetFiberInstance()
 
-	fiberInstance.Get("/health", healthcheck.GetStatus)
+	RegisterRoutes(fiberInstance)
 
 	err = serverInstance.Start()
 	if err != nil {
