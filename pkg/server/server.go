@@ -31,6 +31,8 @@ func NewServer(configInstance config.Config) Server {
 }
 
 func (server *server) Start() error {
+	serverConfig := server.config.GetServerConfig()
+
 	shutdownChannel := make(chan os.Signal, 1)
 	signal.Notify(shutdownChannel, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
@@ -42,7 +44,6 @@ func (server *server) Start() error {
 		}
 	}()
 
-	serverConfig := server.config.GetServerConfig()
 	return server.fiber.Listen(fmt.Sprintf(":%d", serverConfig.Port))
 }
 
