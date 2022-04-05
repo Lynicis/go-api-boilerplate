@@ -44,8 +44,6 @@ jobs:
         run: go test -tags=unit ./...
 
   coverage:
-    needs:
-      - unit-test
 
     runs-on: ubuntu-latest
     steps:
@@ -56,9 +54,22 @@ jobs:
       - name: Generate coverage report
         run: go test -tags=unit -coverprofile=coverage.txt -covermode=atomic ./...
 
+      - uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_SECRET_KEY }}
+          files: ./coverage.txt
+          fail_ci_if_error: true
+
+  security-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: ./.github/actions/go-cache
+
       - uses: deepsourcelabs/test-coverage-action@master
         with:
           key: go
           coverage-file: coverage.txt
-          failed-ci-on-error: false
+          fail-ci-on-error: false
           dsn: ${{ secrets.DEEPSOURCE_DSN }}
