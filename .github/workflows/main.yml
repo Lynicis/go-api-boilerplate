@@ -44,6 +44,8 @@ jobs:
         run: go test -tags=unit ./...
 
   coverage:
+    needs:
+      - unit-test
 
     runs-on: ubuntu-latest
     steps:
@@ -61,6 +63,9 @@ jobs:
           fail_ci_if_error: true
 
   security-check:
+    needs:
+      - coverage
+
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
