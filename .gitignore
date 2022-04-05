@@ -2,3 +2,4 @@
 .idea/
 out/
 go-rest-api-boilerplate
+coverage.txt

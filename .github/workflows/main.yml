@@ -56,9 +56,9 @@ jobs:
       - name: Generate coverage report
         run: go test -tags=unit -coverprofile=coverage.txt -covermode=atomic ./...
 
-      - uses: codecov/codecov-action@v2
+      - uses: deepsourcelabs/test-coverage-action@master
         with:
-          token: ${{ secrets.CODECOV_SECRET_KEY }}
-          files: ./coverage.txt
-          fail_ci_if_error: true
-          flags: unit
+          key: go
+          coverage-file: coverage.txt
+          failed-ci-on-error: false
+          dsn: ${{ secrets.DEEPSOURCE_DSN }}
