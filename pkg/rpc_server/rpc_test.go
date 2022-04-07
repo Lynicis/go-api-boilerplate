@@ -4,6 +4,7 @@ package rpcserver
 
 import (
 	"context"
+	"google.golang.org/grpc/credentials/insecure"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -46,7 +47,7 @@ func TestNewRPCServer(t *testing.T) {
 			}
 		}()
 
-		connection, err := grpc.Dial(":8091", grpc.WithInsecure())
+		connection, err := grpc.Dial(":8091", grpc.WithTransportCredentials(insecure.NewCredentials()))
 		defer func(connection *grpc.ClientConn) {
 			err = connection.Close()
 			assert.Nil(t, err)
