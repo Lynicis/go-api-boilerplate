@@ -1,13 +1,14 @@
 //go:build unit
 
-package healthcheck
+package health_handler
 
 import (
-	"github.com/gofiber/fiber/v2"
-	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_HealthCheckHandler(t *testing.T) {

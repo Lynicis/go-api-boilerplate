@@ -1,9 +1,13 @@
 install_dependencies:
-	go get ./...
-	go mo tidy
+	go get -u ./...
+	go mod tidy
 
 lint:
 	golangci-lint run ./...
+
+run_local:
+	APP_ENV=local go build cmd/main.go
+	go run go-rest-api-boilerplate
 
 run_unit_tests:
 	make generate_mock
