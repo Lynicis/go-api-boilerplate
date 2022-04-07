@@ -22,6 +22,7 @@ type rpcServer struct {
 
 func NewRPCServer(config config.Config) RPCServer {
 	grpcInstance := grpc.NewServer()
+
 	return &rpcServer{
 		config: config,
 		server: grpcInstance,
