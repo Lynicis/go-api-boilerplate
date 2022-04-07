@@ -2,12 +2,14 @@ package rpcserver
 
 import (
 	"fmt"
-	configmodel "go-rest-api-boilerplate/pkg/config/model"
-	"google.golang.org/grpc"
 	"net"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"google.golang.org/grpc"
+
+	configmodel "go-rest-api-boilerplate/pkg/config/model"
 )
 
 type RPCServer interface {

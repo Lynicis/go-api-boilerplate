@@ -2,11 +2,12 @@ package config
 
 import (
 	"fmt"
-	"go-rest-api-boilerplate/pkg/path"
-	"gopkg.in/yaml.v3"
 	"io/ioutil"
 
+	"gopkg.in/yaml.v3"
+
 	configmodel "go-rest-api-boilerplate/pkg/config/model"
+	"go-rest-api-boilerplate/pkg/path"
 )
 
 type Config interface {

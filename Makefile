@@ -2,6 +2,9 @@ install_dependencies:
 	go get ./...
 	go mo tidy
 
+lint:
+	golangci-lint run ./...
+
 run_unit_tests:
 	make generate_mock
 	go test -tags=unit ./...
