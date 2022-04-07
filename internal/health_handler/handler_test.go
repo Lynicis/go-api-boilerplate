@@ -3,6 +3,8 @@
 package health_handler
 
 import (
+	"encoding/json"
+	health_handler_model "go-rest-api-boilerplate/internal/health_handler/model"
 	"io/ioutil"
 	"net/http/httptest"
 	"testing"
@@ -21,6 +23,13 @@ func Test_HealthCheckHandler(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, fiber.StatusOK, response.StatusCode)
 
-	body, _ := ioutil.ReadAll(response.Body)
-	assert.Equal(t, "OK", string(body))
+	body, err := ioutil.ReadAll(response.Body)
+	assert.Nil(t, err)
+
+	var marshalledBody health_handler_model.HealthEndpoint
+	err = json.Unmarshal(body, &marshalledBody)
+	assert.Nil(t, err)
+
+	expectedBody := health_handler_model.HealthEndpoint{Status: "OK"}
+	assert.Equal(t, expectedBody, marshalledBody)
 }
