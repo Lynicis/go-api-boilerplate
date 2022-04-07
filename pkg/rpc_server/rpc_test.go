@@ -5,11 +5,12 @@ package rpcserver
 import (
 	"context"
 	"fmt"
-	"google.golang.org/grpc/credentials/insecure"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 
 	configmodel "go-rest-api-boilerplate/pkg/config/model"
 	health "go-rest-api-boilerplate/pkg/rpc_server/proto"
@@ -45,6 +46,8 @@ func TestNewRPCServer(t *testing.T) {
 				t.Fail()
 			}
 		}()
+
+		time.Sleep(5 * time.Second)
 
 		connection, err := grpc.Dial(fmt.Sprintf(":%d", rpcServerConfig.Port), grpc.WithTransportCredentials(insecure.NewCredentials()))
 		defer func(connection *grpc.ClientConn) {
