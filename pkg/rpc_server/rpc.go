@@ -2,7 +2,7 @@ package rpcserver
 
 import (
 	"fmt"
-	"go-rest-api-boilerplate/pkg/config"
+	configmodel "go-rest-api-boilerplate/pkg/config/model"
 	"google.golang.org/grpc"
 	"net"
 	"os"
@@ -17,14 +17,14 @@ type RPCServer interface {
 
 type rpcServer struct {
 	server *grpc.Server
-	config config.Config
+	config configmodel.RPCServer
 }
 
-func NewRPCServer(config config.Config) RPCServer {
+func NewRPCServer(serverConfig configmodel.RPCServer) RPCServer {
 	grpcInstance := grpc.NewServer()
 
 	return &rpcServer{
-		config: config,
+		config: serverConfig,
 		server: grpcInstance,
 	}
 }
@@ -42,8 +42,8 @@ func (rpcServer *rpcServer) StartServer() error {
 		rpcServer.server.Stop()
 	}()
 
-	rpcConfig := rpcServer.config.GetRPCConfig()
-	tcpServer, err := net.Listen("tcp", fmt.Sprintf(":%d", rpcConfig.Port))
+	serverAddress := fmt.Sprintf(":%d", rpcServer.config.Port)
+	tcpServer, err := net.Listen("tcp", serverAddress)
 	if err != nil {
 		return err
 	}

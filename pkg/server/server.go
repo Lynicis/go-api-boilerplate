@@ -8,7 +8,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 
-	"go-rest-api-boilerplate/pkg/config"
+	configmodel "go-rest-api-boilerplate/pkg/config/model"
 )
 
 type Server interface {
@@ -17,22 +17,20 @@ type Server interface {
 }
 
 type server struct {
-	config config.Config
+	config configmodel.Server
 	fiber  *fiber.App
 }
 
-func NewServer(configInstance config.Config) Server {
+func NewServer(serverConfig configmodel.Server) Server {
 	fiberInstance := fiber.New()
 
 	return &server{
-		config: configInstance,
+		config: serverConfig,
 		fiber:  fiberInstance,
 	}
 }
 
 func (server *server) Start() error {
-	serverConfig := server.config.GetServerConfig()
-
 	shutdownChannel := make(chan os.Signal, 1)
 	signal.Notify(shutdownChannel, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
@@ -44,7 +42,8 @@ func (server *server) Start() error {
 		}
 	}()
 
-	return server.fiber.Listen(fmt.Sprintf(":%d", serverConfig.Port))
+	serverAddress := fmt.Sprintf(":%d", server.config.Port)
+	return server.fiber.Listen(serverAddress)
 }
 
 func (server *server) GetFiberInstance() *fiber.App {

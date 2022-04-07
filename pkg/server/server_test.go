@@ -3,24 +3,22 @@
 package server
 
 import (
-	configmodel "go-rest-api-boilerplate/pkg/config/model"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 
-	configmock "go-rest-api-boilerplate/pkg/config/mock"
+	configmodel "go-rest-api-boilerplate/pkg/config/model"
 )
 
 func TestNewServer(t *testing.T) {
-	mockController := gomock.NewController(t)
-	defer mockController.Finish()
-
 	t.Run("should create server instance and return server instance", func(t *testing.T) {
-		testConfig := configmock.NewMockConfig(mockController)
-		testServer := NewServer(testConfig)
+		serverConfig := configmodel.Server{
+			Port: 8090,
+		}
+
+		testServer := NewServer(serverConfig)
 
 		expected := &server{}
 
@@ -29,10 +27,11 @@ func TestNewServer(t *testing.T) {
 	})
 
 	t.Run("should server start without error", func(t *testing.T) {
-		testConfig := configmock.NewMockConfig(mockController)
-		testConfig.EXPECT().GetServerConfig().Return(configmodel.Server{Port: 8090})
+		serverConfig := configmodel.Server{
+			Port: 8090,
+		}
 
-		testServer := NewServer(testConfig)
+		testServer := NewServer(serverConfig)
 
 		go func() {
 			err := testServer.Start()
@@ -56,12 +55,11 @@ func TestNewServer(t *testing.T) {
 }
 
 func TestServer_GetFiberInstance(t *testing.T) {
-	mockController := gomock.NewController(t)
-	defer mockController.Finish()
+	serverConfig := configmodel.Server{
+		Port: 8090,
+	}
 
-	testConfig := configmock.NewMockConfig(mockController)
-
-	testServer := NewServer(testConfig)
+	testServer := NewServer(serverConfig)
 	fiberInstance := testServer.GetFiberInstance()
 
 	expected := &fiber.App{}

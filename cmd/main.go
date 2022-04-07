@@ -31,7 +31,8 @@ func main() {
 
 	configInstance := config.Init(readConfig, getEnvironment)
 
-	serverInstance := server.NewServer(configInstance)
+	serverConfig := configInstance.GetServerConfig()
+	serverInstance := server.NewServer(serverConfig)
 	fiberInstance := serverInstance.GetFiberInstance()
 
 	RegisterRoutes(fiberInstance)
