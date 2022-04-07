@@ -4,7 +4,7 @@ test_patterns = ["**/*_test.go"]
 
 exclude_patterns = [
   "**/*_mock.go",
-  "**/*_pb.go",
+  "**/*.pb.go",
   "**/*_grpc.pb.go",
 ]
 
