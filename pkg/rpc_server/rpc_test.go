@@ -31,7 +31,7 @@ func TestNewRPCServer(t *testing.T) {
 
 	t.Run("should start rpc server without error", func(t *testing.T) {
 		rpcServerConfig := configmodel.RPCServer{
-			Port: 8091,
+			Port: 8080,
 		}
 
 		testRPCServer := NewRPCServer(rpcServerConfig)
