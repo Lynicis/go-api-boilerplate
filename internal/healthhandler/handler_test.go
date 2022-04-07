@@ -1,16 +1,17 @@
 //go:build unit
 
-package health_handler
+package healthhandler
 
 import (
 	"encoding/json"
-	health_handler_model "go-rest-api-boilerplate/internal/health_handler/model"
 	"io/ioutil"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/assert"
+
+	healthhandlermodel "go-rest-api-boilerplate/internal/healthhandler/model"
 )
 
 func Test_HealthCheckHandler(t *testing.T) {
@@ -26,10 +27,10 @@ func Test_HealthCheckHandler(t *testing.T) {
 	body, err := ioutil.ReadAll(response.Body)
 	assert.Nil(t, err)
 
-	var marshalledBody health_handler_model.HealthEndpoint
+	var marshalledBody healthhandlermodel.HealthEndpoint
 	err = json.Unmarshal(body, &marshalledBody)
 	assert.Nil(t, err)
 
-	expectedBody := health_handler_model.HealthEndpoint{Status: "OK"}
+	expectedBody := healthhandlermodel.HealthEndpoint{Status: "OK"}
 	assert.Equal(t, expectedBody, marshalledBody)
 }

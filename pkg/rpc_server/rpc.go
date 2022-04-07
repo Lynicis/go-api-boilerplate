@@ -12,6 +12,7 @@ import (
 	configmodel "go-rest-api-boilerplate/pkg/config/model"
 )
 
+// RPCServer RPC Server methods
 type RPCServer interface {
 	GetRPCServer() *grpc.Server
 	StartServer() error
@@ -22,6 +23,7 @@ type rpcServer struct {
 	config configmodel.RPCServer
 }
 
+// NewRPCServer Create new gRPC server
 func NewRPCServer(serverConfig configmodel.RPCServer) RPCServer {
 	grpcInstance := grpc.NewServer()
 

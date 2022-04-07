@@ -49,7 +49,10 @@ func TestNewRPCServer(t *testing.T) {
 
 		time.Sleep(5 * time.Second)
 
-		connection, err := grpc.Dial(fmt.Sprintf(":%d", rpcServerConfig.Port), grpc.WithTransportCredentials(insecure.NewCredentials()))
+		connection, err := grpc.Dial(
+			fmt.Sprintf(":%d", rpcServerConfig.Port),
+			grpc.WithTransportCredentials(insecure.NewCredentials()),
+		)
 		defer func(connection *grpc.ClientConn) {
 			err = connection.Close()
 			assert.Nil(t, err)

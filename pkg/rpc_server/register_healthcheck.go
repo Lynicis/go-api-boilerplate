@@ -12,6 +12,7 @@ type healthService struct {
 	*health.UnimplementedHealthCheckServiceServer
 }
 
+// RegisterHealthCheckService Register gRPC health service
 func RegisterHealthCheckService(server grpc.ServiceRegistrar) {
 	health.RegisterHealthCheckServiceServer(server, &healthService{})
 }
