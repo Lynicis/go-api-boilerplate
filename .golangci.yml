@@ -1,0 +1,42 @@
+run:
+  go: '1.18'
+  concurrency: 4
+  timeout: 5m
+  issue-exit-code: 1
+  skip-files:
+    - "**/*_mock.go"
+    - "**/*.pb.go"
+    - "**/*_grpc.pb.go"
+
+output:
+  format: colored-line-number
+  print-issued-lines: true
+
+linters:
+  disable-all: true
+  enable:
+    - deadcode
+    - dupl
+    - errcheck
+    - errname
+    - errorlint
+    - funlen
+    - gochecknoglobals
+    - gocognit
+    - goconst
+    - gocritic
+    - goimports
+    - golint
+    - gosec
+    - gosimple
+    - govet
+    - importas
+    - lll
+    - stylecheck
+    - typecheck
+    - unconvert
+    - unparam
+    - unused
+    - varcheck
+    - varnamelen
+    - whitespace

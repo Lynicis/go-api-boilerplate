@@ -15,7 +15,9 @@ jobs:
       - uses: ./.github/actions/go-cache
 
       - name: Linting
-        run: go fmt ./...
+        uses: golangci/golangci-lint-action@v2
+        with:
+          version: v1.45.2
 
   build:
     needs:
