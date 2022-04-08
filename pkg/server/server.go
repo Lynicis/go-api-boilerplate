@@ -7,45 +7,49 @@ import (
 	"syscall"
 
 	"github.com/gofiber/fiber/v2"
+	"go.uber.org/zap"
 
 	configmodel "go-rest-api-boilerplate/pkg/config/model"
+	"go-rest-api-boilerplate/pkg/logger"
 )
 
-// Server This interface for HTTP Server
+// Server methods for getter and start http server with fiber
 type Server interface {
 	GetFiberInstance() *fiber.App
-	Start() error
+	Start()
 }
 
 type server struct {
 	config configmodel.Server
 	fiber  *fiber.App
+	logger logger.Logger
 }
 
-// NewServer Create New HTTP Server with Fiber
-func NewServer(serverConfig configmodel.Server) Server {
+// NewServer function is create new server instance
+func NewServer(serverConfig configmodel.Server, logger logger.Logger) Server {
 	fiberInstance := fiber.New()
 
 	return &server{
 		config: serverConfig,
 		fiber:  fiberInstance,
+		logger: logger,
 	}
 }
 
-func (server *server) Start() error {
+func (server *server) Start() {
 	shutdownChannel := make(chan os.Signal, 1)
 	signal.Notify(shutdownChannel, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
 	go func() {
 		<-shutdownChannel
-		err := server.fiber.Shutdown()
-		if err != nil {
-			panic(err)
-		}
+		_ = server.fiber.Shutdown()
 	}()
 
 	serverAddress := fmt.Sprintf(":%d", server.config.Port)
-	return server.fiber.Listen(serverAddress)
+	err := server.fiber.Listen(serverAddress)
+	if err != nil {
+		server.logger.Fatalf("something wrong while server starting", zap.Error(err))
+	}
 }
 
 func (server *server) GetFiberInstance() *fiber.App {
