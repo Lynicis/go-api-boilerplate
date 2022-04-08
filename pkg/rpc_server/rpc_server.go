@@ -2,16 +2,16 @@ package rpcserver
 
 import (
 	"fmt"
-	"go-rest-api-boilerplate/pkg/logger"
-	"go.uber.org/zap"
 	"net"
 	"os"
 	"os/signal"
 	"syscall"
 
+	"go.uber.org/zap"
 	"google.golang.org/grpc"
 
 	configmodel "go-rest-api-boilerplate/pkg/config/model"
+	"go-rest-api-boilerplate/pkg/logger"
 )
 
 // RPCServer interface provide getter and starting methods
