@@ -69,6 +69,7 @@ jobs:
           key: go
           coverage-file: coverage.txt
           fail-ci-on-error: false
+          dsn: ${{ secrets.DEEPSOURCE_DSN }}
 
   security-check:
     needs:
