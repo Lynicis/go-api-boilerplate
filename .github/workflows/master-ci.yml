@@ -56,7 +56,7 @@ jobs:
       - uses: ./.github/actions/go-cache
 
       - name: Generate coverage report
-        run: go test -tags=unit -coverprofile=coverage.txt -covermode=atomic ./...
+        run: go test -coverprofile=coverage.txt -covermode=atomic ./...
 
       - name: Measure test coverage
         uses: codecov/codecov-action@v2

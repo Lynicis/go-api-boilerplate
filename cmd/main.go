@@ -25,14 +25,12 @@ func main() {
 	getEnvironment := os.Getenv("APP_ENV")
 	configPath, err := config.GetConfigPath(getEnvironment)
 	if err != nil {
-		log.Errorf("failed to read environment variable: %s", err)
-		os.Exit(-1)
+		log.Fatalf("failed to read environment variable: %s", err)
 	}
 
 	readConfig, err := config.ReadConfig(configPath)
 	if err != nil {
-		log.Errorf("failed to read config file %s", err)
-		os.Exit(-1)
+		log.Fatalf("failed to read config file %s", err)
 	}
 
 	configInstance := config.Init(readConfig, getEnvironment)
@@ -45,8 +43,7 @@ func main() {
 
 	err = serverInstance.Start()
 	if err != nil {
-		log.Errorf("failed to start server: %s", err)
-		os.Exit(-1)
+		log.Fatalf("failed to start server: %s", err)
 	}
 }
 

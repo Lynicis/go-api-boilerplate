@@ -7,6 +7,8 @@ import (
 	"syscall"
 
 	"github.com/gofiber/fiber/v2"
+	loggermiddleware "github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/recover"
 
 	configmodel "go-rest-api-boilerplate/pkg/config/model"
 )
@@ -26,6 +28,9 @@ type server struct {
 // NewServer create new server instance
 func NewServer(serverConfig configmodel.Server) Server {
 	fiberInstance := fiber.New()
+
+	fiberInstance.Use(recover.New())
+	fiberInstance.Use(loggermiddleware.New())
 
 	return &server{
 		config: serverConfig,
