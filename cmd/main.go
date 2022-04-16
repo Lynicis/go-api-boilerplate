@@ -3,17 +3,20 @@ package main
 import (
 	"os"
 
-	"go.uber.org/zap"
+	"github.com/gofiber/fiber/v2"
 
+	"go-rest-api-boilerplate/internal/healthhandler"
 	"go-rest-api-boilerplate/pkg/config"
 	"go-rest-api-boilerplate/pkg/logger"
 	"go-rest-api-boilerplate/pkg/server"
 )
 
 func main() {
+	var err error
+
 	log := logger.CreateLogger()
 	defer func(log logger.Logger) {
-		err := log.Sync()
+		err = log.Sync()
 		if err != nil {
 			panic(err)
 		}
@@ -22,21 +25,31 @@ func main() {
 	getEnvironment := os.Getenv("APP_ENV")
 	configPath, err := config.GetConfigPath(getEnvironment)
 	if err != nil {
-		log.Errorf("Failed to read environment variable", zap.Error(err))
+		log.Errorf("failed to read environment variable: %s", err)
+		os.Exit(-1)
 	}
 
 	readConfig, err := config.ReadConfig(configPath)
 	if err != nil {
-		log.Errorf("Failed to read config file", zap.Error(err))
+		log.Errorf("failed to read config file %s", err)
+		os.Exit(-1)
 	}
 
 	configInstance := config.Init(readConfig, getEnvironment)
 
 	serverConfig := configInstance.GetServerConfig()
-	serverInstance := server.NewServer(serverConfig, log)
+	serverInstance := server.NewServer(serverConfig)
 
 	fiberInstance := serverInstance.GetFiberInstance()
-	server.RegisterRoutes(fiberInstance)
+	registerRoutes(fiberInstance)
 
-	serverInstance.Start()
+	err = serverInstance.Start()
+	if err != nil {
+		log.Errorf("failed to start server: %s", err)
+		os.Exit(-1)
+	}
+}
+
+func registerRoutes(server *fiber.App) {
+	server.Get("/health", healthhandler.GetStatus)
 }

@@ -12,6 +12,9 @@ run_local:
 	go build -o $(PROJECT_NAME) cmd/main.go
 	APP_ENV=$(APP_ENV) go run $(PROJECT_NAME)
 
+security:
+	gosec -no-fail -fmt sarif -out results.sarif ./...
+
 run_unit_tests:
 	make generate_mock
 	go test -tags=unit ./...

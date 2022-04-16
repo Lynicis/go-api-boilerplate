@@ -4,9 +4,7 @@ package server
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
-	loggermock "go-rest-api-boilerplate/pkg/logger/mock"
 	"net/http/httptest"
 	"testing"
 
@@ -14,16 +12,12 @@ import (
 )
 
 func TestNewServer(t *testing.T) {
-	mockController := gomock.NewController(t)
-	defer mockController.Finish()
-
 	t.Run("should create server instance and return server instance", func(t *testing.T) {
-		mockedLogger := loggermock.NewMockLogger(mockController)
 		serverConfig := configmodel.Server{
 			Port: 8090,
 		}
 
-		testServer := NewServer(serverConfig, mockedLogger)
+		testServer := NewServer(serverConfig)
 
 		expected := &server{}
 
@@ -32,14 +26,18 @@ func TestNewServer(t *testing.T) {
 	})
 
 	t.Run("should server start without error", func(t *testing.T) {
-		mockedLogger := loggermock.NewMockLogger(mockController)
 		serverConfig := configmodel.Server{
 			Port: 8090,
 		}
 
-		testServer := NewServer(serverConfig, mockedLogger)
+		testServer := NewServer(serverConfig)
 
-		go testServer.Start()
+		go func() {
+			err := testServer.Start()
+			assert.Nil(t, err)
+
+			testServer.Shutdown()
+		}()
 
 		testFiberInstance := testServer.GetFiberInstance()
 		testFiberInstance.Get("/exist", func(ctx *fiber.Ctx) error {
@@ -53,18 +51,29 @@ func TestNewServer(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, response.StatusCode, fiber.StatusOK)
 	})
+
+	t.Run("should server start return error", func(t *testing.T) {
+		serverConfig := configmodel.Server{
+			Port: -1000,
+		}
+
+		testServer := NewServer(serverConfig)
+
+		go func() {
+			err := testServer.Start()
+			assert.NotNil(t, err)
+
+			testServer.Shutdown()
+		}()
+	})
 }
 
 func TestServer_GetFiberInstance(t *testing.T) {
-	mockController := gomock.NewController(t)
-	defer mockController.Finish()
-
-	mockedLogger := loggermock.NewMockLogger(mockController)
 	serverConfig := configmodel.Server{
 		Port: 8090,
 	}
 
-	testServer := NewServer(serverConfig, mockedLogger)
+	testServer := NewServer(serverConfig)
 	fiberInstance := testServer.GetFiberInstance()
 
 	expected := &fiber.App{}

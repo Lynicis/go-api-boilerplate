@@ -10,7 +10,7 @@ import (
 	"go-rest-api-boilerplate/pkg/path"
 )
 
-// Config interface is provide getter methods for config fields
+// Config config domain
 type Config interface {
 	GetServerConfig() configmodel.Server
 	GetRPCConfig() configmodel.RPCServer
@@ -22,7 +22,7 @@ type config struct {
 	fields      configmodel.Fields
 }
 
-// Init is initialize config package
+// Init create config instance
 func Init(configFields configmodel.Fields, appEnvironment string) Config {
 	return &config{
 		environment: appEnvironment,
@@ -30,7 +30,7 @@ func Init(configFields configmodel.Fields, appEnvironment string) Config {
 	}
 }
 
-// GetConfigPath is handle environment with APP_ENV environment variable and return config path
+// GetConfigPath handle environment with APP_ENV environment variable and return config path
 func GetConfigPath(environment string) (string, error) {
 	var configPath string
 
@@ -51,7 +51,7 @@ func GetConfigPath(environment string) (string, error) {
 	return configPath, nil
 }
 
-// ReadConfig is read a config file and return marshalled config
+// ReadConfig read a config file and return marshalled config
 func ReadConfig(configPath string) (configmodel.Fields, error) {
 	unmarshalledConfig, err := ioutil.ReadFile(configPath)
 	if err != nil {

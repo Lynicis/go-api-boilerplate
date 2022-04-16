@@ -5,7 +5,7 @@ import (
 
 	"google.golang.org/grpc"
 
-	health "go-rest-api-boilerplate/pkg/rpc_server/proto"
+	health "go-rest-api-boilerplate/pkg/rpc_server/testdata"
 )
 
 type healthService struct {

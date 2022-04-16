@@ -4,7 +4,7 @@ import (
 	"go.uber.org/zap"
 )
 
-// Logger interface provide logger methods with severity level
+// Logger zap logger methods
 type Logger interface {
 	Debugf(format string, args ...interface{})
 	Debug(args ...interface{})

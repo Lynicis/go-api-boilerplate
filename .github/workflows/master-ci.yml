@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/setup-go@v2
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Linting
         uses: golangci/golangci-lint-action@v2
@@ -25,7 +25,7 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - uses: ./.github/actions/go-cache
 
@@ -38,7 +38,7 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - uses: ./.github/actions/go-cache
 
@@ -51,20 +51,22 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - uses: ./.github/actions/go-cache
 
       - name: Generate coverage report
         run: go test -tags=unit -coverprofile=coverage.txt -covermode=atomic ./...
 
-      - uses: codecov/codecov-action@v2
+      - name: Measure test coverage
+        uses: codecov/codecov-action@v2
         with:
           token: ${{ secrets.CODECOV_SECRET_KEY }}
           files: ./coverage.txt
           fail_ci_if_error: true
 
-      - uses: deepsourcelabs/test-coverage-action@master
+      - name: Analysis
+        uses: deepsourcelabs/test-coverage-action@master
         with:
           key: go
           coverage-file: coverage.txt
@@ -77,12 +79,7 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-
-      - uses: ./.github/actions/go-cache
-
-      - name: Checkout Source
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Run Gosec Security Scanner
         uses: securego/gosec@master

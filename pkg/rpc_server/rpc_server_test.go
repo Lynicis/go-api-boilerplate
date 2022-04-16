@@ -5,8 +5,6 @@ package rpcserver
 import (
 	"context"
 	"fmt"
-	"github.com/golang/mock/gomock"
-	loggermock "go-rest-api-boilerplate/pkg/logger/mock"
 	"testing"
 	"time"
 
@@ -15,20 +13,16 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 
 	configmodel "go-rest-api-boilerplate/pkg/config/model"
-	health "go-rest-api-boilerplate/pkg/rpc_server/proto"
+	health "go-rest-api-boilerplate/pkg/rpc_server/testdata"
 )
 
 func TestNewRPCServer(t *testing.T) {
-	mockController := gomock.NewController(t)
-	defer mockController.Finish()
-
 	t.Run("should create new rpcServer server and return new rpcServer server instance", func(t *testing.T) {
-		mockedLogger := loggermock.NewMockLogger(mockController)
 		rpcServerConfig := configmodel.RPCServer{
 			Port: 8091,
 		}
 
-		rpcServerInstance := NewRPCServer(rpcServerConfig, mockedLogger)
+		rpcServerInstance := NewRPCServer(rpcServerConfig)
 
 		expectedRPCServerInstance := &rpcServer{}
 
@@ -37,17 +31,21 @@ func TestNewRPCServer(t *testing.T) {
 	})
 
 	t.Run("should start rpc server without error", func(t *testing.T) {
-		mockedLogger := loggermock.NewMockLogger(mockController)
 		rpcServerConfig := configmodel.RPCServer{
 			Port: 8080,
 		}
 
-		testRPCServer := NewRPCServer(rpcServerConfig, mockedLogger)
+		testRPCServer := NewRPCServer(rpcServerConfig)
 		rpcServerInstance := testRPCServer.GetRPCServer()
 
 		RegisterHealthCheckService(rpcServerInstance)
 
-		go testRPCServer.Start()
+		go func() {
+			err := testRPCServer.Start()
+			assert.Nil(t, err)
+
+			testRPCServer.Stop()
+		}()
 
 		time.Sleep(5 * time.Second)
 
@@ -72,18 +70,29 @@ func TestNewRPCServer(t *testing.T) {
 		assert.Nil(t, err)
 		assert.IsType(t, expectedResponse.Status, response.Status)
 	})
+
+	t.Run("should start rpc server return error", func(t *testing.T) {
+		rpcServerConfig := configmodel.RPCServer{
+			Port: -1100,
+		}
+
+		testRPCServer := NewRPCServer(rpcServerConfig)
+
+		go func() {
+			err := testRPCServer.Start()
+			assert.NotNil(t, err)
+
+			testRPCServer.Stop()
+		}()
+	})
 }
 
 func TestRpcServer_GetRPCServer(t *testing.T) {
-	mockController := gomock.NewController(t)
-	defer mockController.Finish()
-
-	mockedLogger := loggermock.NewMockLogger(mockController)
 	rpcServerConfig := configmodel.RPCServer{
 		Port: 8091,
 	}
 
-	newRPCServer := NewRPCServer(rpcServerConfig, mockedLogger)
+	newRPCServer := NewRPCServer(rpcServerConfig)
 
 	rpcServerInstance := newRPCServer.GetRPCServer()
 	expected := &grpc.Server{}

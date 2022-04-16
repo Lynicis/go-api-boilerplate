@@ -97,5 +97,5 @@ var HealthCheckService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "pkg/rpc_server/proto/health.proto",
+	Metadata: "pkg/rpc_server/testdata/health.testdata",
 }

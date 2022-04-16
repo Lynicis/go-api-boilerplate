@@ -7,33 +7,30 @@ import (
 	"os/signal"
 	"syscall"
 
-	"go.uber.org/zap"
 	"google.golang.org/grpc"
 
 	configmodel "go-rest-api-boilerplate/pkg/config/model"
-	"go-rest-api-boilerplate/pkg/logger"
 )
 
-// RPCServer interface provide getter and starting methods
+// RPCServer gRPC server domain
 type RPCServer interface {
 	GetRPCServer() *grpc.Server
-	Start()
+	Start() error
+	Stop()
 }
 
 type rpcServer struct {
 	server *grpc.Server
 	config configmodel.RPCServer
-	logger logger.Logger
 }
 
-// NewRPCServer create new rpc instance
-func NewRPCServer(serverConfig configmodel.RPCServer, logger logger.Logger) RPCServer {
+// NewRPCServer create new rpc server instance
+func NewRPCServer(serverConfig configmodel.RPCServer) RPCServer {
 	grpcInstance := grpc.NewServer()
 
 	return &rpcServer{
 		config: serverConfig,
 		server: grpcInstance,
-		logger: logger,
 	}
 }
 
@@ -41,7 +38,7 @@ func (rpcServer *rpcServer) GetRPCServer() *grpc.Server {
 	return rpcServer.server
 }
 
-func (rpcServer *rpcServer) Start() {
+func (rpcServer *rpcServer) Start() error {
 	shutdownChannel := make(chan os.Signal, 1)
 	signal.Notify(shutdownChannel, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
@@ -53,11 +50,12 @@ func (rpcServer *rpcServer) Start() {
 	serverAddress := fmt.Sprintf(":%d", rpcServer.config.Port)
 	tcpServer, err := net.Listen("tcp", serverAddress)
 	if err != nil {
-		rpcServer.logger.Fatal("got error while TCP server starting", zap.Error(err))
+		return err
 	}
 
-	err = rpcServer.server.Serve(tcpServer)
-	if err != nil {
-		rpcServer.logger.Fatal("got error while gRPC server starting", zap.Error(err))
-	}
+	return rpcServer.server.Serve(tcpServer)
+}
+
+func (rpcServer *rpcServer) Stop() {
+	rpcServer.server.Stop()
 }
