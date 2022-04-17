@@ -4,6 +4,9 @@ import (
 	"os"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/compress"
+	loggermiddleware "github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/recover"
 
 	"go-rest-api-boilerplate/internal/healthhandler"
 	"go-rest-api-boilerplate/pkg/config"
@@ -15,22 +18,16 @@ func main() {
 	var err error
 
 	log := logger.CreateLogger()
-	defer func(log logger.Logger) {
-		err = log.Sync()
-		if err != nil {
-			panic(err)
-		}
-	}(log)
 
 	getEnvironment := os.Getenv("APP_ENV")
 	configPath, err := config.GetConfigPath(getEnvironment)
 	if err != nil {
-		log.Fatalf("failed to read environment variable: %s", err)
+		log.Fatal(err)
 	}
 
 	readConfig, err := config.ReadConfig(configPath)
 	if err != nil {
-		log.Fatalf("failed to read config file %s", err)
+		log.Fatal(err)
 	}
 
 	configInstance := config.Init(readConfig, getEnvironment)
@@ -39,12 +36,19 @@ func main() {
 	serverInstance := server.NewServer(serverConfig)
 
 	fiberInstance := serverInstance.GetFiberInstance()
+	registerMiddlewares(fiberInstance)
 	registerRoutes(fiberInstance)
 
 	err = serverInstance.Start()
 	if err != nil {
-		log.Fatalf("failed to start server: %s", err)
+		log.Fatal(err)
 	}
+}
+
+func registerMiddlewares(server *fiber.App) {
+	server.Use(recover.New())
+	server.Use(loggermiddleware.New())
+	server.Use(compress.New())
 }
 
 func registerRoutes(server *fiber.App) {
