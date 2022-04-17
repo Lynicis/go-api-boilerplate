@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"io/ioutil"
+	"path/filepath"
 
 	"gopkg.in/yaml.v3"
 
@@ -53,7 +54,7 @@ func GetConfigPath(environment string) (string, error) {
 
 // ReadConfig read a config file and return marshalled config
 func ReadConfig(configPath string) (configmodel.Fields, error) {
-	unmarshalledConfig, err := ioutil.ReadFile(configPath)
+	unmarshalledConfig, err := ioutil.ReadFile(filepath.Clean(configPath))
 	if err != nil {
 		return configmodel.Fields{}, err
 	}
