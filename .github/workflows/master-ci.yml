@@ -83,7 +83,7 @@ jobs:
       - name: Test
         run: go test -tags=unit ./...
 
-  coverage:
+  analysis:
     needs:
       - unit-test
 
@@ -91,14 +91,29 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - uses: ./.github/actions/go-cache
+
+      - name: Generate coverage report
+        run: go test -coverprofile=coverage.txt -covermode=atomic ./...
+
+      - name: Measure test coverage
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_SECRET_KEY }}
+          files: ./coverage.txt
+          fail_ci_if_error: true
+
       - name: Static code analysis
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        uses: deepsourcelabs/test-coverage-action@master
+        with:
+          key: go
+          coverage-file: coverage.txt
+          fail-ci-on-error: true
+          dsn: ${{ secrets.DEEPSOURCE_DSN }}
 
   security-check:
     needs:
-      - coverage
+      - analysis
 
     runs-on: ubuntu-latest
     steps:
