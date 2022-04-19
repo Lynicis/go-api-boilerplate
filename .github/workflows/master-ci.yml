@@ -80,8 +80,14 @@ jobs:
 
       - uses: ./.github/actions/go-cache
 
-      - name: Test
-        run: go test -tags=unit ./...
+      - name: Run tests
+        run: go test -tags=unit -coverprofile=coverage.txt -covermode=atomic ./...
+
+      - name: Upload test results as a artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-result
+          path: ./coverage.txt
 
   analysis:
     needs:
@@ -93,38 +99,17 @@ jobs:
 
       - uses: ./.github/actions/go-cache
 
-      - name: Generate coverage report
-        run: go test -coverprofile=coverage.txt -covermode=atomic ./...
-
-      - name: Measure test coverage
-        uses: codecov/codecov-action@v2
+      - name: Download artifact
+        uses: actions/download-artifact@v3
         with:
-          token: ${{ secrets.CODECOV_SECRET_KEY }}
-          files: ./coverage.txt
-          fail_ci_if_error: true
+          name: coverage-result
+
+      - name: List artifact
+        shell: bash
+        run: ls -R
 
       - name: Static code analysis
-        uses: deepsourcelabs/test-coverage-action@master
-        with:
-          key: go
-          coverage-file: coverage.txt
-          fail-ci-on-error: true
-          dsn: ${{ secrets.DEEPSOURCE_DSN }}
-
-  security-check:
-    needs:
-      - analysis
-
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Run Gosec Security Scanner
-        uses: securego/gosec@master
-        with:
-          args: '-no-fail -fmt sarif -out results.sarif ./...'
-
-      - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@v1
-        with:
-          sarif_file: results.sarif
+        uses: sonarsource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_REPO_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}}
