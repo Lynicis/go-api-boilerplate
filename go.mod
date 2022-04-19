@@ -4,7 +4,6 @@ go 1.18
 
 require (
 	github.com/gofiber/fiber/v2 v2.32.0
-	github.com/golang/mock v1.6.0
 	github.com/stretchr/testify v1.7.0
 	go.uber.org/zap v1.21.0
 	google.golang.org/grpc v1.45.0

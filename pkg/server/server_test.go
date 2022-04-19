@@ -48,7 +48,7 @@ func TestNewServer(t *testing.T) {
 
 		request := httptest.NewRequest(fiber.MethodGet, "/exist", nil)
 
-		response, err := testFiberInstance.Test(request, 1)
+		response, err := testFiberInstance.Test(request, -1)
 
 		assert.Nil(t, err)
 		assert.Equal(t, response.StatusCode, fiber.StatusOK)
