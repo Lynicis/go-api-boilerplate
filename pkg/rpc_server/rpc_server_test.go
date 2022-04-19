@@ -47,7 +47,7 @@ func TestNewRPCServer(t *testing.T) {
 			testRPCServer.Stop()
 		}()
 
-		time.Sleep(5 * time.Second)
+		time.Sleep(3 * time.Second)
 
 		connection, err := grpc.Dial(
 			fmt.Sprintf(":%d", rpcServerConfig.Port),

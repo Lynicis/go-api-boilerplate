@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	configmodel "go-rest-api-boilerplate/pkg/config/model"
 )
@@ -40,10 +41,10 @@ func TestNewServer(t *testing.T) {
 			assert.Nil(t, err)
 		}()
 
+		time.Sleep(3 * time.Second)
+
 		testFiberInstance := testServer.GetFiberInstance()
-		testFiberInstance.Get("/exist", func(ctx *fiber.Ctx) error {
-			return ctx.SendStatus(fiber.StatusOK)
-		})
+		registerEndpointForTest(testFiberInstance)
 
 		request := httptest.NewRequest(fiber.MethodGet, "/exist", nil)
 
@@ -81,4 +82,10 @@ func TestServer_GetFiberInstance(t *testing.T) {
 	expected := &fiber.App{}
 
 	assert.IsType(t, expected, fiberInstance)
+}
+
+func registerEndpointForTest(fiberInstance *fiber.App) {
+	fiberInstance.Get("/exist", func(ctx *fiber.Ctx) error {
+		return ctx.SendStatus(fiber.StatusOK)
+	})
 }

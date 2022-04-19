@@ -42,7 +42,8 @@ jobs:
       - name: Check build file
         uses: andstor/file-existence-action@v1
         with:
-          files: $APP_NAME
+          files: go-rest-api-boilerplate
+          allow_failure: true
 
   dockerize:
     needs:
@@ -59,7 +60,7 @@ jobs:
       - name: Build Docker image
         shell: bash
         run: |
-          docker build . --file Dockerfile --tag $IMAGE_NAME --label "runnumber=${GITHUB_RUN_ID}"
+          docker build . --file Dockerfile --tag $APP_NAME --label "runnumber=${GITHUB_RUN_ID}"
 
       - name: Log in to container registry
         shell: bash
@@ -69,18 +70,15 @@ jobs:
       - name: Push image to container registry
         shell: bash
         run: |
-          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
+          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$APP_NAME
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
           [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
           [ "$VERSION" == "master" ] && VERSION=latest
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
-          docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
+          docker tag $APP_NAME $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION
-
-        env:
-          IMAGE_NAME: ${{ github.event.repository.name }}
 
   unit-test:
     needs:
@@ -110,9 +108,11 @@ jobs:
         shell: bash
         run: go test -coverprofile=coverage.out -covermode=atomic ./...
 
-      - name: Display coverage result
-        shell: bash
-        run: ls -R | grep coverage.out
+      - name: Check coverage result file
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "coverage.out"
+          allow_failure: true
 
       - name: Upload coverage results
         uses: actions/upload-artifact@v3
@@ -133,9 +133,11 @@ jobs:
         with:
           name: coverage-result
 
-      - name: Display test result
-        shell: bash
-        run: ls -R | grep coverage.out
+      - name: Check coverage result file
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "coverage.out"
+          allow_failure: true
 
       - name: Static code analysis
         uses: sonarsource/sonarcloud-github-action@master
