@@ -1,6 +1,10 @@
 [![CI](https://github.com/Lynicis/go-rest-api-boilerplate/actions/workflows/master-ci.yml/badge.svg?branch=master&event=push)](https://github.com/Lynicis/go-rest-api-boilerplate/actions/workflows/master-ci.yml)
-[![codecov](https://codecov.io/gh/Lynicis/go-rest-api-boilerplate/branch/master/graph/badge.svg?token=Ct4qgngYYy)](https://codecov.io/gh/Lynicis/go-rest-api-boilerplate)
-[![DeepSource](https://deepsource.io/gh/Lynicis/go-rest-api-boilerplate.svg/?label=active+issues&token=4vMXfkSvMlMraDMShMneZGVO)](https://deepsource.io/gh/Lynicis/go-rest-api-boilerplate/?ref=repository-badge)
-[![DeepSource](https://deepsource.io/gh/Lynicis/go-rest-api-boilerplate.svg/?label=resolved+issues&token=4vMXfkSvMlMraDMShMneZGVO)](https://deepsource.io/gh/Lynicis/go-rest-api-boilerplate/?ref=repository-badge)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Lynicis_go-rest-api-boilerplate&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Lynicis_go-rest-api-boilerplate)
+
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Lynicis_go-rest-api-boilerplate&metric=coverage)](https://sonarcloud.io/summary/new_code?id=Lynicis_go-rest-api-boilerplate)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=Lynicis_go-rest-api-boilerplate&metric=bugs)](https://sonarcloud.io/summary/new_code?id=Lynicis_go-rest-api-boilerplate)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=Lynicis_go-rest-api-boilerplate&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=Lynicis_go-rest-api-boilerplate)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=Lynicis_go-rest-api-boilerplate&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=Lynicis_go-rest-api-boilerplate)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=Lynicis_go-rest-api-boilerplate&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=Lynicis_go-rest-api-boilerplate)
 
 ### REST API Boilerplate
