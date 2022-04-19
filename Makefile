@@ -12,19 +12,12 @@ run:
 	go build -o $(PROJECT_NAME) cmd/main.go
 	APP_ENV=$(APP_ENV) go run $(PROJECT_NAME)
 
-security:
-	gosec -no-fail -fmt html -out results.html ./...
-	open results.html
-
 run_unit_tests:
 	make generate_mock
 	go test -tags=unit ./...
 
 build_docker:
 	docker build -t $(PROJECT_NAME) .
-
-coverage:
-	go test -coverprofile=coverage.txt -covermode=atomic ./...
 
 coverage_report:
 	go test -tags=unit -coverprofile=coverage.out ./...

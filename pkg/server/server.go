@@ -15,7 +15,7 @@ import (
 type Server interface {
 	GetFiberInstance() *fiber.App
 	Start() error
-	Shutdown()
+	Shutdown() error
 }
 
 type server struct {
@@ -46,8 +46,8 @@ func (server *server) Start() error {
 	return server.fiber.Listen(serverAddress)
 }
 
-func (server *server) Shutdown() {
-	_ = server.fiber.Shutdown()
+func (server *server) Shutdown() error {
+	return server.fiber.Shutdown()
 }
 
 func (server *server) GetFiberInstance() *fiber.App {

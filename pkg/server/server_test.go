@@ -36,7 +36,8 @@ func TestNewServer(t *testing.T) {
 			err := testServer.Start()
 			assert.Nil(t, err)
 
-			testServer.Shutdown()
+			err = testServer.Shutdown()
+			assert.Nil(t, err)
 		}()
 
 		testFiberInstance := testServer.GetFiberInstance()
@@ -63,7 +64,8 @@ func TestNewServer(t *testing.T) {
 			err := testServer.Start()
 			assert.NotNil(t, err)
 
-			testServer.Shutdown()
+			err = testServer.Shutdown()
+			assert.Nil(t, err)
 		}()
 	})
 }
