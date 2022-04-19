@@ -8,9 +8,6 @@ on:
     tags:
       - v*
 
-env:
-  IMAGE_NAME: ${{ github.event.repository.name }}
-
 jobs:
 
   lint:
@@ -36,7 +33,14 @@ jobs:
       - uses: ./.github/actions/go-cache
 
       - name: Build
-        run: go build ./...
+        shell: bash
+        run: |
+          go build -o $APP_NAME cmd/main.go
+          ./$APP_NAME
+
+        env:
+          APP_ENV: local
+          APP_NAME: ${{ github.event.repository.name }}
 
   dockerize:
     needs:
@@ -50,15 +54,18 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Build image
+      - name: Build Docker image
+        shell: bash
         run: |
           docker build . --file Dockerfile --tag $IMAGE_NAME --label "runnumber=${GITHUB_RUN_ID}"
 
-      - name: Log in to registry
+      - name: Log in to container registry
+        shell: bash
         run: |
           echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
 
-      - name: Push image
+      - name: Push image to container registry
+        shell: bash
         run: |
           IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
@@ -69,6 +76,9 @@ jobs:
           echo VERSION=$VERSION
           docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION
+
+        env:
+          IMAGE_NAME: ${{ github.event.repository.name }}
 
   unit-test:
     needs:
@@ -81,32 +91,49 @@ jobs:
       - uses: ./.github/actions/go-cache
 
       - name: Run tests
-        run: go test -tags=unit -coverprofile=coverage.txt -covermode=atomic ./...
+        shell: bash
+        run: go test -tags=unit ./...
 
-      - name: Upload test results as a artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: coverage-result
-          path: ./coverage.txt
-
-  analysis:
+  coverage:
     needs:
       - unit-test
 
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
+      - uses: ./.github/actions/go-cache
+
+      - name: Generate coverage report
+        shell: bash
+        run: go test -coverprofile=coverage.out -covermode=atomic ./...
+
+      - name: Display coverage result
+        shell: bash
+        run: ls -R | grep coverage.out
+
+      - name: Upload coverage results
+        uses: actions/upload-artifact@v3
         with:
-          fetch-depth: 0
+          name: coverage-result
+          path: ./coverage.out
+
+  analysis:
+    needs:
+      - coverage
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
 
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
           name: coverage-result
 
-      - name: List artifact
+      - name: Display test result
         shell: bash
-        run: ls -R
+        run: ls -R | grep coverage.out
 
       - name: Static code analysis
         uses: sonarsource/sonarcloud-github-action@master
