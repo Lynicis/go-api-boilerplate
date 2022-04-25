@@ -11,7 +11,7 @@ import (
 func Test_CreateLogger(t *testing.T) {
 	loggerInstance := CreateLogger()
 
-	expected := &logger{}
+	expectedLogger := &logger{}
 
-	assert.IsType(t, expected, loggerInstance)
+	assert.IsType(t, expectedLogger, loggerInstance)
 }

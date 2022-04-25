@@ -7,10 +7,12 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/compress"
 	loggermiddleware "github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/joho/godotenv"
 
 	"go-rest-api-boilerplate/internal/healthhandler"
 	"go-rest-api-boilerplate/pkg/config"
 	"go-rest-api-boilerplate/pkg/logger"
+	rpcserver "go-rest-api-boilerplate/pkg/rpc_server"
 	"go-rest-api-boilerplate/pkg/server"
 )
 
@@ -18,6 +20,11 @@ func main() {
 	var err error
 
 	log := logger.CreateLogger()
+
+	err = godotenv.Load()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	getEnvironment := os.Getenv("APP_ENV")
 	configPath, err := config.GetConfigPath(getEnvironment)
@@ -31,15 +38,25 @@ func main() {
 	}
 
 	configInstance := config.Init(readConfig, getEnvironment)
+	log.Infof("App environment: %s", configInstance.GetAppEnvironment())
 
 	serverConfig := configInstance.GetServerConfig()
-	serverInstance := server.NewServer(serverConfig)
+	serverInstance := server.NewHTTPServer(serverConfig.HTTP)
+	log.Info("HTTP Server running!")
+
+	rpcServer := rpcserver.NewRPCServer(serverConfig.RPC)
+	log.Infof("gRPC Server running!")
 
 	fiberInstance := serverInstance.GetFiberInstance()
 	registerMiddlewares(fiberInstance)
 	registerRoutes(fiberInstance)
 
 	err = serverInstance.Start()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = rpcServer.Start()
 	if err != nil {
 		log.Fatal(err)
 	}

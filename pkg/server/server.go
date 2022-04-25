@@ -11,7 +11,6 @@ import (
 	configmodel "go-rest-api-boilerplate/pkg/config/model"
 )
 
-// Server http server with fiber framework domain
 type Server interface {
 	GetFiberInstance() *fiber.App
 	Start() error
@@ -19,13 +18,16 @@ type Server interface {
 }
 
 type server struct {
-	config configmodel.Server
+	config configmodel.HTTPServer
 	fiber  *fiber.App
 }
 
-// NewServer create new server instance
-func NewServer(serverConfig configmodel.Server) Server {
-	fiberInstance := fiber.New()
+func NewHTTPServer(serverConfig configmodel.HTTPServer) Server {
+	fiberConfig := fiber.Config{
+		DisableStartupMessage: true,
+	}
+
+	fiberInstance := fiber.New(fiberConfig)
 
 	return &server{
 		config: serverConfig,

@@ -12,7 +12,6 @@ import (
 	configmodel "go-rest-api-boilerplate/pkg/config/model"
 )
 
-// RPCServer gRPC server domain
 type RPCServer interface {
 	GetRPCServer() *grpc.Server
 	Start() error
@@ -24,7 +23,6 @@ type rpcServer struct {
 	config configmodel.RPCServer
 }
 
-// NewRPCServer create new rpc server instance
 func NewRPCServer(serverConfig configmodel.RPCServer) RPCServer {
 	grpcInstance := grpc.NewServer()
 
@@ -39,6 +37,8 @@ func (rpcServer *rpcServer) GetRPCServer() *grpc.Server {
 }
 
 func (rpcServer *rpcServer) Start() error {
+	var err error
+
 	shutdownChannel := make(chan os.Signal, 1)
 	signal.Notify(shutdownChannel, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 

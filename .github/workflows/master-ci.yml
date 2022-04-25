@@ -16,9 +16,9 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-go@v2
-
       - uses: actions/checkout@v3
+
+      - uses: ./.github/actions/go-cache
 
       - name: Linting
         uses: golangci/golangci-lint-action@v2
@@ -42,7 +42,7 @@ jobs:
       - name: Check build file
         uses: andstor/file-existence-action@v1
         with:
-          files: go-rest-api-boilerplate
+          files: ${{ env.APP_NAME }}
           allow_failure: true
 
   dockerize:

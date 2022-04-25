@@ -1,0 +1,5 @@
+server:
+    rpc:
+        port: "invalid port"
+    http:
+        port: "invalid port"

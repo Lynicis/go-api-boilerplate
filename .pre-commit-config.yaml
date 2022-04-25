@@ -1,0 +1,9 @@
+repos:
+  - repo: https://github.com/tekwizely/pre-commit-golang
+    rev: 03770b120e9a4dddcaf3662059ac0948e97c1825
+    hooks:
+      - id: golangci-lint-mod
+      - id: my-cmd-mod
+        name: unit test
+        alias: unit test
+        args: [make, test]

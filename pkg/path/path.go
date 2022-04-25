@@ -5,10 +5,12 @@ import (
 	"runtime"
 )
 
-// GetProjectBasePath return base directory path
-func GetProjectBasePath() string {
+func GetRootDirectory() string {
 	_, currentFile, _, _ := runtime.Caller(0)
-	getDirectory := filepath.Join(filepath.Dir(currentFile), "../..")
+	directory := filepath.Join(
+		filepath.Dir(currentFile),
+		"../..",
+	)
 
-	return getDirectory
+	return directory
 }

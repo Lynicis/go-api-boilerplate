@@ -1,16 +1,30 @@
 run:
-  timeout: 5m
-  modules-download-mode: readonly
+  concurrency: 4
+  timeout: 3m
+  go: "1.18"
 
 linters:
+  disable-all: true
   enable:
+    - deadcode
     - errcheck
+    - gomodguard
+    - cyclop
+    - gocritic
+    - goconst
+    - whitespace
+    - varcheck
+    - varnamelen
+    - funlen
     - goimports
-    - golint
-    - govet
-    - staticcheck
+    - lll
+    - gosec
+
+severity:
+  default-severity: error
 
 issues:
-  exclude-use-default: false
-  max-issues-per-linter: 0
-  max-same-issues: 0
+  exclude:
+    - _test\.go
+    - _grpc\.pb\.go
+    - \.pb\.go

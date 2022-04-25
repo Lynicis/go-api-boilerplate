@@ -1,6 +1,5 @@
-package healthhandlermodel
+package health_handler_model
 
-// HealthEndpoint health check endpoint body
 type HealthEndpoint struct {
 	Status string `json:"status"`
 }

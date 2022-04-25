@@ -11,10 +11,8 @@ import (
 	"go-rest-api-boilerplate/pkg/path"
 )
 
-// Config config domain
 type Config interface {
 	GetServerConfig() configmodel.Server
-	GetRPCConfig() configmodel.RPCServer
 	GetAppEnvironment() string
 }
 
@@ -23,7 +21,6 @@ type config struct {
 	fields      configmodel.Fields
 }
 
-// Init create config instance
 func Init(configFields configmodel.Fields, appEnvironment string) Config {
 	return &config{
 		environment: appEnvironment,
@@ -31,11 +28,10 @@ func Init(configFields configmodel.Fields, appEnvironment string) Config {
 	}
 }
 
-// GetConfigPath handle environment with APP_ENV environment variable and return config path
 func GetConfigPath(environment string) (string, error) {
 	var configPath string
 
-	projectPath := path.GetProjectBasePath()
+	projectPath := path.GetRootDirectory()
 	baseConfigPath := fmt.Sprintf("%s/config/", projectPath)
 
 	switch environment {
@@ -46,31 +42,32 @@ func GetConfigPath(environment string) (string, error) {
 	case "test":
 		configPath = fmt.Sprintf("%s/pkg/config/testdata/config.yaml", projectPath)
 	default:
-		return "", fmt.Errorf("you must define valid app environment in environment variables")
+		return configPath,
+			fmt.Errorf("you must define valid app environment in environment variables")
 	}
 
 	return configPath, nil
 }
 
-// ReadConfig read a config file and return marshalled config
 func ReadConfig(configPath string) (configmodel.Fields, error) {
+	var err error
+
 	unmarshalledConfig, err := ioutil.ReadFile(filepath.Clean(configPath))
 	if err != nil {
 		return configmodel.Fields{}, err
 	}
 
 	var configFields configmodel.Fields
-	_ = yaml.Unmarshal(unmarshalledConfig, &configFields)
+	err = yaml.Unmarshal(unmarshalledConfig, &configFields)
+	if err != nil {
+		return configmodel.Fields{}, err
+	}
 
 	return configFields, nil
 }
 
 func (config *config) GetServerConfig() configmodel.Server {
 	return config.fields.Server
-}
-
-func (config *config) GetRPCConfig() configmodel.RPCServer {
-	return config.fields.RPCServer
 }
 
 func (config *config) GetAppEnvironment() string {

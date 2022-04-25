@@ -3,42 +3,46 @@
 package server
 
 import (
-	"github.com/gofiber/fiber/v2"
-	"github.com/stretchr/testify/assert"
 	"net/http/httptest"
 	"testing"
 	"time"
 
+	"github.com/gofiber/fiber/v2"
+	"github.com/stretchr/testify/assert"
+
+	"go-rest-api-boilerplate/internal/healthhandler"
 	configmodel "go-rest-api-boilerplate/pkg/config/model"
 )
 
-func TestNewServer(t *testing.T) {
+func Test_NewHTTPServer(t *testing.T) {
 	t.Run("should create server instance and return server instance", func(t *testing.T) {
-		serverConfig := configmodel.Server{
+		serverConfig := configmodel.HTTPServer{
 			Port: 8090,
 		}
 
-		testServer := NewServer(serverConfig)
+		httpServerInstance := NewHTTPServer(serverConfig)
 
-		expected := &server{}
+		serverInstance := &server{}
 
-		assert.NotNil(t, testServer)
-		assert.IsType(t, expected, testServer)
+		assert.NotNil(t, httpServerInstance)
+		assert.IsType(t, serverInstance, httpServerInstance)
 	})
 
-	t.Run("should server start without error", func(t *testing.T) {
-		serverConfig := configmodel.Server{
+	t.Run("should server start and stop without error", func(t *testing.T) {
+		serverConfig := configmodel.HTTPServer{
 			Port: 8090,
 		}
 
-		testServer := NewServer(serverConfig)
+		testServer := NewHTTPServer(serverConfig)
 
 		go func() {
-			err := testServer.Start()
-			assert.Nil(t, err)
+			var err error
+
+			err = testServer.Start()
+			assert.NoError(t, err)
 
 			err = testServer.Shutdown()
-			assert.Nil(t, err)
+			assert.NoError(t, err)
 		}()
 
 		time.Sleep(3 * time.Second)
@@ -46,46 +50,43 @@ func TestNewServer(t *testing.T) {
 		testFiberInstance := testServer.GetFiberInstance()
 		registerEndpointForTest(testFiberInstance)
 
-		request := httptest.NewRequest(fiber.MethodGet, "/exist", nil)
-
+		request := httptest.NewRequest(fiber.MethodGet, "/health", nil)
 		response, err := testFiberInstance.Test(request, -1)
 
-		assert.Nil(t, err)
+		assert.NoError(t, err)
 		assert.Equal(t, response.StatusCode, fiber.StatusOK)
 	})
 
-	t.Run("should server start return error", func(t *testing.T) {
-		serverConfig := configmodel.Server{
+	t.Run("should server start and stop return error", func(t *testing.T) {
+		serverConfig := configmodel.HTTPServer{
 			Port: -1000,
 		}
 
-		testServer := NewServer(serverConfig)
+		testServer := NewHTTPServer(serverConfig)
 
 		go func() {
 			err := testServer.Start()
-			assert.NotNil(t, err)
+			assert.Error(t, err)
 
-			err = testServer.Shutdown()
-			assert.Nil(t, err)
+			_ = testServer.Shutdown()
 		}()
 	})
 }
 
 func TestServer_GetFiberInstance(t *testing.T) {
-	serverConfig := configmodel.Server{
+	serverConfig := configmodel.HTTPServer{
 		Port: 8090,
 	}
 
-	testServer := NewServer(serverConfig)
-	fiberInstance := testServer.GetFiberInstance()
+	httpServerInstance := NewHTTPServer(serverConfig)
+	getFiberInstance := httpServerInstance.GetFiberInstance()
 
-	expected := &fiber.App{}
+	fiberInstance := &fiber.App{}
 
-	assert.IsType(t, expected, fiberInstance)
+	assert.NotNil(t, httpServerInstance)
+	assert.IsType(t, fiberInstance, getFiberInstance)
 }
 
 func registerEndpointForTest(fiberInstance *fiber.App) {
-	fiberInstance.Get("/exist", func(ctx *fiber.Ctx) error {
-		return ctx.SendStatus(fiber.StatusOK)
-	})
+	fiberInstance.Get("/health", healthhandler.GetStatus)
 }

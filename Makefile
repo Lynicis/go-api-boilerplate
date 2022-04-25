@@ -12,8 +12,7 @@ run:
 	go build -o $(PROJECT_NAME) cmd/main.go
 	APP_ENV=$(APP_ENV) go run $(PROJECT_NAME)
 
-run_unit_tests:
-	make generate_mock
+test:
 	go test -tags=unit ./...
 
 build_docker:
@@ -27,4 +26,4 @@ coverage_report:
 generate_mock:
 
 generate_proto:
-	protoc --go_out=. --go-grpc_out=. --go_opt=paths=source_relative --go-grpc_opt=paths=source_relative pkg/rpc_server/proto/health.proto
+	protoc --go_out=. --go-grpc_out=. --go_opt=paths=source_relative --go-grpc_opt=paths=source_relative pkg/rpc_server/testdata/health.proto

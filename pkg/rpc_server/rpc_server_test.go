@@ -13,7 +13,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 
 	configmodel "go-rest-api-boilerplate/pkg/config/model"
-	health "go-rest-api-boilerplate/pkg/rpc_server/testdata"
+	healthtestdata "go-rest-api-boilerplate/pkg/rpc_server/testdata"
 )
 
 func TestNewRPCServer(t *testing.T) {
@@ -51,23 +51,25 @@ func TestNewRPCServer(t *testing.T) {
 
 		connection, err := grpc.Dial(
 			fmt.Sprintf(":%d", rpcServerConfig.Port),
-			grpc.WithTransportCredentials(insecure.NewCredentials()),
+			grpc.WithTransportCredentials(
+				insecure.NewCredentials(),
+			),
 		)
 
 		defer func(connection *grpc.ClientConn) {
 			err = connection.Close()
-			assert.Nil(t, err)
+			assert.NoError(t, err)
 		}(connection)
 
-		client := health.NewHealthCheckServiceClient(connection)
+		client := healthtestdata.NewHealthCheckServiceClient(connection)
 		ctx := context.Background()
 
-		response, err := client.HealthCheck(ctx, &health.HealthCheckRequest{})
-		expectedResponse := &health.HealthCheckResponse{
+		response, err := client.HealthCheck(ctx, &healthtestdata.HealthCheckRequest{})
+		expectedResponse := &healthtestdata.HealthCheckResponse{
 			Status: "OK",
 		}
 
-		assert.Nil(t, err)
+		assert.NoError(t, err)
 		assert.IsType(t, expectedResponse.Status, response.Status)
 	})
 
@@ -80,14 +82,14 @@ func TestNewRPCServer(t *testing.T) {
 
 		go func() {
 			err := testRPCServer.Start()
-			assert.NotNil(t, err)
+			assert.Error(t, err)
 
 			testRPCServer.Stop()
 		}()
 	})
 }
 
-func TestRpcServer_GetRPCServer(t *testing.T) {
+func TestRPCServer_GetRPCServer(t *testing.T) {
 	rpcServerConfig := configmodel.RPCServer{
 		Port: 8091,
 	}
