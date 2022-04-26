@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v3.19.4
-// source: pkg/rpc_server/testdata/health.proto
+// source: internal/health/proto/health/health.proto
 
 package health
 
@@ -101,5 +101,5 @@ var HealthCheckService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "pkg/rpc_server/testdata/health.proto",
+	Metadata: "internal/health/proto/health/health.proto",
 }

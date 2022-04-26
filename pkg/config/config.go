@@ -8,7 +8,7 @@ import (
 	"gopkg.in/yaml.v3"
 
 	configmodel "go-rest-api-boilerplate/pkg/config/model"
-	"go-rest-api-boilerplate/pkg/path"
+	"go-rest-api-boilerplate/pkg/project_path"
 )
 
 type Config interface {
@@ -31,7 +31,7 @@ func Init(configFields configmodel.Fields, appEnvironment string) Config {
 func GetConfigPath(environment string) (string, error) {
 	var configPath string
 
-	projectPath := path.GetRootDirectory()
+	projectPath := project_path.GetRootDirectory()
 	baseConfigPath := fmt.Sprintf("%s/config/", projectPath)
 
 	switch environment {

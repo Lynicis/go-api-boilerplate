@@ -1,6 +1,6 @@
 syntax = "proto3";
 package health;
-option go_package = "pkg/rpc_server/testdata/health";
+option go_package = "internal/health/proto/health";
 
 service HealthCheckService {
   rpc HealthCheck (HealthCheckRequest) returns (HealthCheckResponse);

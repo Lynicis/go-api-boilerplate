@@ -1,6 +1,6 @@
 //go:build unit
 
-package rpcserver
+package rpc_server
 
 import (
 	"context"
@@ -12,13 +12,14 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	configmodel "go-rest-api-boilerplate/pkg/config/model"
-	healthtestdata "go-rest-api-boilerplate/pkg/rpc_server/testdata"
+	"go-rest-api-boilerplate/internal/health"
+	health_proto "go-rest-api-boilerplate/internal/health/proto/health"
+	config_model "go-rest-api-boilerplate/pkg/config/model"
 )
 
 func TestNewRPCServer(t *testing.T) {
 	t.Run("should create new rpcServer server and return new rpcServer server instance", func(t *testing.T) {
-		rpcServerConfig := configmodel.RPCServer{
+		rpcServerConfig := config_model.RPCServer{
 			Port: 8091,
 		}
 
@@ -31,14 +32,14 @@ func TestNewRPCServer(t *testing.T) {
 	})
 
 	t.Run("should start rpc server without error", func(t *testing.T) {
-		rpcServerConfig := configmodel.RPCServer{
+		rpcServerConfig := config_model.RPCServer{
 			Port: 8080,
 		}
 
 		testRPCServer := NewRPCServer(rpcServerConfig)
 		rpcServerInstance := testRPCServer.GetRPCServer()
 
-		RegisterHealthCheckService(rpcServerInstance)
+		health.RegisterHealthCheckService(rpcServerInstance)
 
 		go func() {
 			err := testRPCServer.Start()
@@ -61,11 +62,11 @@ func TestNewRPCServer(t *testing.T) {
 			assert.NoError(t, err)
 		}(connection)
 
-		client := healthtestdata.NewHealthCheckServiceClient(connection)
+		client := health_proto.NewHealthCheckServiceClient(connection)
 		ctx := context.Background()
 
-		response, err := client.HealthCheck(ctx, &healthtestdata.HealthCheckRequest{})
-		expectedResponse := &healthtestdata.HealthCheckResponse{
+		response, err := client.HealthCheck(ctx, &health_proto.HealthCheckRequest{})
+		expectedResponse := &health_proto.HealthCheckResponse{
 			Status: "OK",
 		}
 
@@ -74,7 +75,7 @@ func TestNewRPCServer(t *testing.T) {
 	})
 
 	t.Run("should start rpc server return error", func(t *testing.T) {
-		rpcServerConfig := configmodel.RPCServer{
+		rpcServerConfig := config_model.RPCServer{
 			Port: -1100,
 		}
 
@@ -90,7 +91,7 @@ func TestNewRPCServer(t *testing.T) {
 }
 
 func TestRPCServer_GetRPCServer(t *testing.T) {
-	rpcServerConfig := configmodel.RPCServer{
+	rpcServerConfig := config_model.RPCServer{
 		Port: 8091,
 	}
 

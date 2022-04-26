@@ -2,22 +2,26 @@ package main
 
 import (
 	"os"
+	"sync"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
-	loggermiddleware "github.com/gofiber/fiber/v2/middleware/logger"
+	logger_middleware "github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/joho/godotenv"
 
-	"go-rest-api-boilerplate/internal/healthhandler"
+	"go-rest-api-boilerplate/internal/health"
 	"go-rest-api-boilerplate/pkg/config"
+	"go-rest-api-boilerplate/pkg/http_server"
 	"go-rest-api-boilerplate/pkg/logger"
-	rpcserver "go-rest-api-boilerplate/pkg/rpc_server"
-	"go-rest-api-boilerplate/pkg/server"
+	"go-rest-api-boilerplate/pkg/rpc_server"
 )
 
 func main() {
 	var err error
+
+	waitGroup := new(sync.WaitGroup)
+	waitGroup.Add(2)
 
 	log := logger.CreateLogger()
 
@@ -41,33 +45,44 @@ func main() {
 	log.Infof("App environment: %s", configInstance.GetAppEnvironment())
 
 	serverConfig := configInstance.GetServerConfig()
-	serverInstance := server.NewHTTPServer(serverConfig.HTTP)
-	log.Info("HTTP Server running!")
+	httpServerInstance := http_server.NewHTTPServer(serverConfig.HTTP)
+	rpcServerInstance := rpc_server.NewRPCServer(serverConfig.RPC)
 
-	rpcServer := rpcserver.NewRPCServer(serverConfig.RPC)
-	log.Infof("gRPC Server running!")
+	fiberInstance := httpServerInstance.GetFiberInstance()
+	grpcInstance := rpcServerInstance.GetRPCServer()
 
-	fiberInstance := serverInstance.GetFiberInstance()
 	registerMiddlewares(fiberInstance)
 	registerRoutes(fiberInstance)
 
-	err = serverInstance.Start()
-	if err != nil {
-		log.Fatal(err)
-	}
+	health.RegisterHealthCheckService(grpcInstance)
 
-	err = rpcServer.Start()
-	if err != nil {
-		log.Fatal(err)
-	}
+	go func() {
+		err = httpServerInstance.Start()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		waitGroup.Done()
+	}()
+
+	go func() {
+		err = rpcServerInstance.Start()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		waitGroup.Done()
+	}()
+
+	waitGroup.Wait()
 }
 
-func registerMiddlewares(server *fiber.App) {
-	server.Use(recover.New())
-	server.Use(loggermiddleware.New())
-	server.Use(compress.New())
+func registerMiddlewares(httpServer *fiber.App) {
+	httpServer.Use(recover.New())
+	httpServer.Use(logger_middleware.New())
+	httpServer.Use(compress.New())
 }
 
-func registerRoutes(server *fiber.App) {
-	server.Get("/health", healthhandler.GetStatus)
+func registerRoutes(httpServer *fiber.App) {
+	httpServer.Get("/health", health.GetStatus)
 }

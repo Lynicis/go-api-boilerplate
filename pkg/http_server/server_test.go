@@ -1,6 +1,6 @@
 //go:build unit
 
-package server
+package http_server
 
 import (
 	"net/http/httptest"
@@ -10,13 +10,13 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/assert"
 
-	"go-rest-api-boilerplate/internal/healthhandler"
-	configmodel "go-rest-api-boilerplate/pkg/config/model"
+	"go-rest-api-boilerplate/internal/health"
+	config_model "go-rest-api-boilerplate/pkg/config/model"
 )
 
 func Test_NewHTTPServer(t *testing.T) {
 	t.Run("should create server instance and return server instance", func(t *testing.T) {
-		serverConfig := configmodel.HTTPServer{
+		serverConfig := config_model.HTTPServer{
 			Port: 8090,
 		}
 
@@ -29,7 +29,7 @@ func Test_NewHTTPServer(t *testing.T) {
 	})
 
 	t.Run("should server start and stop without error", func(t *testing.T) {
-		serverConfig := configmodel.HTTPServer{
+		serverConfig := config_model.HTTPServer{
 			Port: 8090,
 		}
 
@@ -58,7 +58,7 @@ func Test_NewHTTPServer(t *testing.T) {
 	})
 
 	t.Run("should server start and stop return error", func(t *testing.T) {
-		serverConfig := configmodel.HTTPServer{
+		serverConfig := config_model.HTTPServer{
 			Port: -1000,
 		}
 
@@ -74,7 +74,7 @@ func Test_NewHTTPServer(t *testing.T) {
 }
 
 func TestServer_GetFiberInstance(t *testing.T) {
-	serverConfig := configmodel.HTTPServer{
+	serverConfig := config_model.HTTPServer{
 		Port: 8090,
 	}
 
@@ -88,5 +88,5 @@ func TestServer_GetFiberInstance(t *testing.T) {
 }
 
 func registerEndpointForTest(fiberInstance *fiber.App) {
-	fiberInstance.Get("/health", healthhandler.GetStatus)
+	fiberInstance.Get("/health", health.GetStatus)
 }

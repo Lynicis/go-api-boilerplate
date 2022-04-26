@@ -11,7 +11,7 @@ import (
 	"gopkg.in/yaml.v3"
 
 	configmodel "go-rest-api-boilerplate/pkg/config/model"
-	"go-rest-api-boilerplate/pkg/path"
+	"go-rest-api-boilerplate/pkg/project_path"
 )
 
 func Test_Init(t *testing.T) {
@@ -127,7 +127,7 @@ func createTestConfigInstance() Config {
 }
 
 func getTestPath(filename string) string {
-	var projectBasePath = path.GetRootDirectory()
+	var projectBasePath = project_path.GetRootDirectory()
 
 	return fmt.Sprintf(
 		"%s/pkg/config/testdata/%s",

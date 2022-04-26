@@ -1,4 +1,4 @@
-package rpcserver
+package rpc_server
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 
 	"google.golang.org/grpc"
 
-	configmodel "go-rest-api-boilerplate/pkg/config/model"
+	config_model "go-rest-api-boilerplate/pkg/config/model"
 )
 
 type RPCServer interface {
@@ -20,10 +20,10 @@ type RPCServer interface {
 
 type rpcServer struct {
 	server *grpc.Server
-	config configmodel.RPCServer
+	config config_model.RPCServer
 }
 
-func NewRPCServer(serverConfig configmodel.RPCServer) RPCServer {
+func NewRPCServer(serverConfig config_model.RPCServer) RPCServer {
 	grpcInstance := grpc.NewServer()
 
 	return &rpcServer{

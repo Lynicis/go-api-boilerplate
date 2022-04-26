@@ -1,4 +1,4 @@
-package server
+package http_server
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 
-	configmodel "go-rest-api-boilerplate/pkg/config/model"
+	config_model "go-rest-api-boilerplate/pkg/config/model"
 )
 
 type Server interface {
@@ -18,11 +18,11 @@ type Server interface {
 }
 
 type server struct {
-	config configmodel.HTTPServer
+	config config_model.HTTPServer
 	fiber  *fiber.App
 }
 
-func NewHTTPServer(serverConfig configmodel.HTTPServer) Server {
+func NewHTTPServer(serverConfig config_model.HTTPServer) Server {
 	fiberConfig := fiber.Config{
 		DisableStartupMessage: true,
 	}

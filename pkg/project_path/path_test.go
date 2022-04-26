@@ -1,6 +1,6 @@
 //go:build unit
 
-package path
+package project_path
 
 import (
 	"github.com/stretchr/testify/assert"
