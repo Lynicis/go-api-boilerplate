@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/tekwizely/pre-commit-golang
-    rev: 03770b120e9a4dddcaf3662059ac0948e97c1825
+    rev: v1.0.0-beta.5
     hooks:
       - id: golangci-lint-mod
       - id: my-cmd-mod
