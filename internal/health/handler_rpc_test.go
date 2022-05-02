@@ -1,35 +1,39 @@
+//go:build unit
+
 package health
 
 import (
 	"context"
-	"testing"
-
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"testing"
 
 	health_proto "go-rest-api-boilerplate/internal/health/proto/health"
 )
 
-func Test_RegisterHealthCheckService(t *testing.T) {
-	var err error
-
+func TestRpcHealthService(t *testing.T) {
 	testRPCServer := grpc.NewServer()
-	port := ":8080"
+	service := RegisterHealthCheckService(testRPCServer)
+	status, _ := service.HealthCheck(context.Background(), &health_proto.HealthCheckRequest{})
+	assert.IsType(t, status, &health_proto.HealthCheckResponse{})
+}
 
+func Test_RegisterHealthCheckService_HealthCheck(t *testing.T) {
+	testRPCServer := grpc.NewServer()
 	RegisterHealthCheckService(testRPCServer)
 
 	ctx := context.Background()
 	connection, err := grpc.Dial(
-		port,
+		":8080",
 		grpc.WithTransportCredentials(
 			insecure.NewCredentials(),
 		),
 	)
-
 	defer func(connection *grpc.ClientConn) {
 		err = connection.Close()
-		assert.NoError(t, err)
+		require.NoError(t, err)
 	}(connection)
 
 	client := health_proto.NewHealthCheckServiceClient(connection)
@@ -39,11 +43,4 @@ func Test_RegisterHealthCheckService(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Equal(t, "OK", actualResponse.Status)
-}
-
-func TestRpcHealthService_HealthCheck(t *testing.T) {
-	testRPCServer := grpc.NewServer()
-	service := RegisterHealthCheckService(testRPCServer)
-	status, _ := service.HealthCheck(context.Background(), &health_proto.HealthCheckRequest{})
-	assert.IsType(t, status, &health_proto.HealthCheckResponse{})
 }
