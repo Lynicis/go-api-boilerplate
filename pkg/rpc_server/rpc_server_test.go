@@ -43,7 +43,7 @@ func TestNewRPCServer(t *testing.T) {
 
 		go func() {
 			err := testRPCServer.Start()
-			assert.Nil(t, err)
+			assert.NoError(t, err)
 
 			testRPCServer.Stop()
 		}()

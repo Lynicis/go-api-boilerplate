@@ -21,19 +21,17 @@ func Test_HealthCheckHandler(t *testing.T) {
 	request := httptest.NewRequest(fiber.MethodGet, "/health", nil)
 	response, err := testHTTPServer.Test(request, 1)
 
-	assert.NoError(t, err)
 	assert.Equal(t, fiber.StatusOK, response.StatusCode)
 
 	body, err := ioutil.ReadAll(response.Body)
-	assert.NoError(t, err)
 
 	var marshalledBody health_handler_model.HealthEndpoint
 	err = json.Unmarshal(body, &marshalledBody)
-	assert.NoError(t, err)
 
 	expectedBody := health_handler_model.HealthEndpoint{
 		Status: "OK",
 	}
 
+	assert.NoError(t, err)
 	assert.Equal(t, expectedBody, marshalledBody)
 }
