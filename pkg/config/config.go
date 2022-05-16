@@ -3,7 +3,7 @@ package config
 import (
 	"fmt"
 	"io/ioutil"
-	"path/filepath"
+	"path"
 
 	"gopkg.in/yaml.v3"
 
@@ -32,15 +32,15 @@ func GetConfigPath(environment string) (string, error) {
 	var configPath string
 
 	projectPath := project_path.GetRootDirectory()
-	baseConfigPath := fmt.Sprintf("%s/config/", projectPath)
+	baseConfigPath := path.Join(projectPath, "config")
 
 	switch environment {
 	case "local":
-		configPath = fmt.Sprintf("%s/development.yaml", baseConfigPath)
+		configPath = path.Join(baseConfigPath, "development.yaml")
 	case "prod":
-		configPath = fmt.Sprintf("%s/production.yaml", baseConfigPath)
+		configPath = path.Join(baseConfigPath, "production.yaml")
 	case "test":
-		configPath = fmt.Sprintf("%s/pkg/config/testdata/config.yaml", projectPath)
+		configPath = path.Join(projectPath, "pkg/config/testdata/config.yaml")
 	default:
 		return configPath,
 			fmt.Errorf("you must define valid app environment in environment variables")
@@ -52,7 +52,9 @@ func GetConfigPath(environment string) (string, error) {
 func ReadConfig(configPath string) (configmodel.Fields, error) {
 	var err error
 
-	unmarshalledConfig, err := ioutil.ReadFile(filepath.Clean(configPath))
+	unmarshalledConfig, err := ioutil.ReadFile(
+		path.Clean(configPath),
+	)
 	if err != nil {
 		return configmodel.Fields{}, err
 	}

@@ -9,11 +9,12 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	"go-rest-api-boilerplate/internal/health"
-	health_proto "go-rest-api-boilerplate/internal/health/proto/health"
+	example_rpc "go-rest-api-boilerplate/internal/example-rpc"
+	health_proto "go-rest-api-boilerplate/internal/example-rpc/proto"
 	config_model "go-rest-api-boilerplate/pkg/config/model"
 )
 
@@ -27,7 +28,6 @@ func TestNewRPCServer(t *testing.T) {
 
 		expectedRPCServerInstance := &rpcServer{}
 
-		assert.NotNil(t, rpcServerInstance)
 		assert.IsType(t, expectedRPCServerInstance, rpcServerInstance)
 	})
 
@@ -39,7 +39,7 @@ func TestNewRPCServer(t *testing.T) {
 		testRPCServer := NewRPCServer(rpcServerConfig)
 		rpcServerInstance := testRPCServer.GetRPCServer()
 
-		health.RegisterHealthCheckService(rpcServerInstance)
+		example_rpc.RegisterHandler(rpcServerInstance)
 
 		go func() {
 			err := testRPCServer.Start()
@@ -59,7 +59,7 @@ func TestNewRPCServer(t *testing.T) {
 
 		defer func(connection *grpc.ClientConn) {
 			err = connection.Close()
-			assert.NoError(t, err)
+			require.NoError(t, err)
 		}(connection)
 
 		client := health_proto.NewHealthCheckServiceClient(connection)
@@ -81,12 +81,15 @@ func TestNewRPCServer(t *testing.T) {
 
 		testRPCServer := NewRPCServer(rpcServerConfig)
 
-		go func() {
+		errChan := make(chan error, 0)
+		go func(errChan chan error) {
 			err := testRPCServer.Start()
-			assert.Error(t, err)
-
 			testRPCServer.Stop()
-		}()
+			errChan <- err
+		}(errChan)
+		err := <-errChan
+
+		assert.Error(t, err)
 	})
 }
 

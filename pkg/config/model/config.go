@@ -1,5 +1,5 @@
 package configmodel
 
 type Fields struct {
-	Server Server
+	Server Server `yaml:"server"`
 }

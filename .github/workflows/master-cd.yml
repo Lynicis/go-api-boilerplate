@@ -8,6 +8,16 @@ on:
       - completed
 
 jobs:
+
+  quality-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Quality Gate check
+        uses: sonarsource/sonarqube-quality-gate-action@master
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
   dummy-job:
     runs-on: ubuntu-latest
     steps:

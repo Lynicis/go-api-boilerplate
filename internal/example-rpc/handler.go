@@ -1,11 +1,11 @@
-package health
+package example_rpc
 
 import (
 	"context"
 
 	"google.golang.org/grpc"
 
-	health_proto "go-rest-api-boilerplate/internal/health/proto/health"
+	health_proto "go-rest-api-boilerplate/internal/example-rpc/proto"
 )
 
 type RPCHealthService interface {
@@ -22,14 +22,14 @@ type rpcHealthService struct {
 	*health_proto.UnimplementedHealthCheckServiceServer
 }
 
-func RegisterHealthCheckService(server grpc.ServiceRegistrar) RPCHealthService {
+func RegisterHandler(server grpc.ServiceRegistrar) RPCHealthService {
 	service := &rpcHealthService{}
 	health_proto.RegisterHealthCheckServiceServer(
 		server,
 		service,
 	)
 
-	return service
+	return &rpcHealthService{}
 }
 
 func (*rpcHealthService) HealthCheck(

@@ -6,3 +6,5 @@ coverage.txt
 coverage.out
 results.sarif
 results.html
+config/development.yaml
+config/production.yaml

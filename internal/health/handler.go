@@ -7,9 +7,11 @@ import (
 )
 
 func GetStatus(ctx *fiber.Ctx) error {
-	return ctx.Status(200).JSON(
-		health_handler_model.HealthEndpoint{
-			Status: "OK",
-		},
-	)
+	return ctx.
+		Status(200).
+		JSON(
+			health_handler_model.HealthEndpoint{
+				Status: "OK",
+			},
+		)
 }

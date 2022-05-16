@@ -107,6 +107,9 @@ func TestConfig_GetServerConfig(t *testing.T) {
 	assert.IsType(t, testServerConfig, expectedServerConfig)
 }
 
+/*
+	Helpers for test
+*/
 func getTestConfigFields() configmodel.Fields {
 	return configmodel.Fields{
 		Server: configmodel.Server{
