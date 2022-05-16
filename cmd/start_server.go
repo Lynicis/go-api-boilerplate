@@ -11,7 +11,7 @@ import (
 func startServer(
 	httpServer http_server.Server,
 	rpcServer rpc_server.RPCServer,
-	logger logger.Logger,
+	log logger.Logger,
 ) {
 	var err error
 
@@ -21,7 +21,7 @@ func startServer(
 	go func() {
 		err = httpServer.Start()
 		if err != nil {
-			logger.Fatal(err)
+			log.Fatal(err)
 		}
 
 		waitGroup.Done()
@@ -30,11 +30,12 @@ func startServer(
 	go func() {
 		err = rpcServer.Start()
 		if err != nil {
-			logger.Fatal(err)
+			log.Fatal(err)
 		}
 
 		waitGroup.Done()
 	}()
 
+	log.Info("Application started")
 	waitGroup.Wait()
 }

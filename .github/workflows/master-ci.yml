@@ -41,7 +41,7 @@ jobs:
 
       - name: Build
         shell: bash
-        run: go build -o $APP_NAME cmd/main.go
+        run: go build -o $APP_NAME cmd/*.go
 
       - name: Check build file
         uses: andstor/file-existence-action@v1

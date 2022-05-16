@@ -11,7 +11,7 @@ lint:
 
 .PHONY: run
 run:
-	go run cmd/main.go
+	go run cmd/*.go
 
 .PHONY: test
 test:

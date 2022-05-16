@@ -31,6 +31,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	log.Infof("Application Environment: %s", appEnvironment)
 
 	readConfig, err := config.ReadConfig(configPath)
 	if err != nil {
