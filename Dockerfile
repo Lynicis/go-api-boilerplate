@@ -8,7 +8,7 @@ RUN go get ./...
 
 COPY . .
 
-RUN go build -o go-rest-api-boilerplate cmd/main.go
+RUN go build -o go-rest-api-boilerplate cmd/*.go
 
 EXPOSE 8080
 
