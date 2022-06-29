@@ -2,14 +2,8 @@ FROM golang:1.18-alpine
 
 WORKDIR /usr/src/app
 
-COPY go.mod go.sum ./
+RUN chmod +x go-api-boilerplate
 
-RUN go get ./...
-
-COPY . .
-
-RUN go build -o go-rest-api-boilerplate cmd/*.go
-
-EXPOSE 8080
+EXPOSE 8080 8081
 
 CMD ./go-rest-api-boilerplate
