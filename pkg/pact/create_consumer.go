@@ -1,24 +1,24 @@
 package pact
 
 import (
-	"path"
+	"path/filepath"
 	"time"
 
 	"github.com/pact-foundation/pact-go/dsl"
 
-	"go-rest-api-boilerplate/pkg/project_path"
+	"go-rest-api-boilerplate/pkg/project"
 )
 
-func CreateConsumer(provider, consumer string) *dsl.Pact {
-	rootDirectory := project_path.GetRootDirectory()
+func CreateConsumer(hostName, providerName, consumerName string) *dsl.Pact {
+	rootDirectory := project.GetRootDirectory()
 	return &dsl.Pact{
-		Host:              "127.0.0.1",
-		Consumer:          provider,
-		Provider:          consumer,
+		Host:              hostName,
+		Consumer:          providerName,
+		Provider:          consumerName,
 		ClientTimeout:     10 * time.Second,
 		LogLevel:          "INFO",
-		LogDir:            path.Join(rootDirectory, ".pact/logs"),
+		LogDir:            filepath.Join(rootDirectory, ".pact/logs"),
 		PactFileWriteMode: "merge",
-		PactDir:           path.Join(rootDirectory, ".pact/pacts"),
+		PactDir:           filepath.Join(rootDirectory, ".pact/pacts"),
 	}
 }

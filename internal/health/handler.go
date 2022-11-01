@@ -1,17 +1,17 @@
 package health
 
 import (
-	"github.com/gofiber/fiber/v2"
+	"net/http"
 
-	health_handler_model "go-rest-api-boilerplate/internal/health/model"
+	"github.com/gofiber/fiber/v2"
 )
 
 func GetStatus(ctx *fiber.Ctx) error {
 	return ctx.
-		Status(200).
+		Status(http.StatusOK).
 		JSON(
-			health_handler_model.HealthEndpoint{
-				Status: "OK",
+			fiber.Map{
+				"status": "OK",
 			},
 		)
 }

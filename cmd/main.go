@@ -2,15 +2,14 @@ package main
 
 import (
 	"os"
-	"path"
+	"path/filepath"
 
 	"github.com/joho/godotenv"
 
 	"go-rest-api-boilerplate/pkg/config"
-	"go-rest-api-boilerplate/pkg/http_server"
 	"go-rest-api-boilerplate/pkg/logger"
-	"go-rest-api-boilerplate/pkg/project_path"
-	"go-rest-api-boilerplate/pkg/rpc_server"
+	"go-rest-api-boilerplate/pkg/project"
+	"go-rest-api-boilerplate/pkg/server"
 )
 
 func main() {
@@ -18,41 +17,32 @@ func main() {
 
 	log := logger.CreateLogger()
 
-	rootDirectory := project_path.GetRootDirectory()
-	dotenvPath := path.Join(rootDirectory, ".env")
+	isAtRemote := os.Getenv(config.IsAtRemote)
+	if isAtRemote == "" {
+		rootDirectory := project.GetRootDirectory()
+		dotenvPath := filepath.Join(rootDirectory, ".env")
+		err = godotenv.Load(dotenvPath)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
 
-	err = godotenv.Load(dotenvPath)
+	var cfg config.Config
+	cfg, err = config.ReadConfig()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	appEnvironment := os.Getenv("APP_ENV")
-	configPath, err := config.GetConfigPath(appEnvironment)
+	httpServer := server.NewServer(cfg)
+	fiberInstance := httpServer.GetFiberInstance()
+
+	registerMiddlewares(fiberInstance)
+	registerRoutes(fiberInstance)
+
+	err = httpServer.Start()
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Infof("Application Environment: %s", appEnvironment)
 
-	readConfig, err := config.ReadConfig(configPath)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	configInstance := config.Init(readConfig, appEnvironment)
-
-	serverConfig := configInstance.GetServerConfig()
-	httpServerInstance := http_server.NewHTTPServer(serverConfig.HTTP)
-	rpcServerInstance := rpc_server.NewRPCServer(serverConfig.RPC)
-
-	fiberInstance := httpServerInstance.GetFiberInstance()
-	grpcInstance := rpcServerInstance.GetRPCServer()
-
-	registerHTTPMiddlewares(fiberInstance)
-	registerHTTPRoutes(fiberInstance)
-	registerRPCHandlers(grpcInstance)
-	startServer(
-		httpServerInstance,
-		rpcServerInstance,
-		log,
-	)
+	log.Info("Application Running...")
 }

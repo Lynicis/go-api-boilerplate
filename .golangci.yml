@@ -1,24 +1,25 @@
 run:
   concurrency: 4
   timeout: 3m
-  go: "1.18"
+  go: "1.19"
 
 linters:
   disable-all: true
   enable:
-    - deadcode
     - errcheck
     - gomodguard
     - cyclop
     - gocritic
     - goconst
     - whitespace
-    - varcheck
+    - unused
     - varnamelen
     - funlen
     - goimports
     - lll
     - gosec
+    - varnamelen
+    - funlen
 
 severity:
   default-severity: error
@@ -26,5 +27,3 @@ severity:
 issues:
   exclude:
     - _test\.go
-    - _grpc\.pb\.go
-    - \.pb\.go

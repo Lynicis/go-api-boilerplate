@@ -1,25 +1,26 @@
 package pact
 
 import (
-	"os"
-	"path"
+	"path/filepath"
 
 	"github.com/pact-foundation/pact-go/types"
 
-	"go-rest-api-boilerplate/pkg/project_path"
+	"go-rest-api-boilerplate/pkg/project"
 )
 
 func CreateProvider(
-	provider string,
+	hostName string,
+	pactBrokerURl string,
+	pactBrokerToken string,
 	stateHandlers types.StateHandlers,
 ) *types.VerifyRequest {
 	return &types.VerifyRequest{
-		ProviderBaseURL:            provider,
-		BrokerURL:                  os.Getenv("PACT_BROKER_URL"),
-		BrokerToken:                os.Getenv("PACT_BROKER_TOKEN"),
+		ProviderBaseURL:            hostName,
+		BrokerURL:                  pactBrokerURl,
+		BrokerToken:                pactBrokerToken,
 		StateHandlers:              stateHandlers,
 		PactLogLevel:               "INFO",
-		PactLogDir:                 path.Join(project_path.GetRootDirectory(), ".pact/logs"),
+		PactLogDir:                 filepath.Join(project.GetRootDirectory(), ".pact/logs"),
 		PublishVerificationResults: true,
 	}
 }

@@ -1,5 +1,0 @@
-server:
-  http:
-    port: 8090
-  rpc:
-    port: 8091

@@ -1,9 +1,9 @@
-FROM golang:1.18-alpine
+FROM golang:1.19.2-alpine
 
 WORKDIR /usr/src/app
 
 RUN chmod +x go-api-boilerplate
 
-EXPOSE 8080 8081
+EXPOSE 8080
 
 CMD ./go-rest-api-boilerplate

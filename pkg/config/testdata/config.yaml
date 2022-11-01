@@ -1,4 +1,0 @@
-server:
-  port: 1234
-rpc-server:
-  port: 5678

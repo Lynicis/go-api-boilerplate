@@ -1,14 +1,14 @@
-package project_path
+package project
 
 import (
-	"path"
+	"path/filepath"
 	"runtime"
 )
 
 func GetRootDirectory() string {
 	_, currentFile, _, _ := runtime.Caller(0)
-	directory := path.Join(
-		path.Dir(currentFile),
+	directory := filepath.Join(
+		filepath.Dir(currentFile),
 		"../..",
 	)
 

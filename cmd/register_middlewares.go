@@ -7,8 +7,8 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/recover"
 )
 
-func registerHTTPMiddlewares(httpServer *fiber.App) {
-	httpServer.Use(recover.New())
-	httpServer.Use(logger.New())
-	httpServer.Use(compress.New())
+func registerMiddlewares(server *fiber.App) {
+	server.Use(recover.New())
+	server.Use(logger.New())
+	server.Use(compress.New())
 }

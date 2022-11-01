@@ -1,6 +1,6 @@
 //go:build unit
 
-package http_server
+package server
 
 import (
 	"net/http/httptest"
@@ -11,29 +11,27 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"go-rest-api-boilerplate/internal/health"
-	config_model "go-rest-api-boilerplate/pkg/config/model"
+	"go-rest-api-boilerplate/pkg/config"
 )
 
-func Test_NewHTTPServer(t *testing.T) {
+func Test_NewServer(t *testing.T) { // todo: need mock
 	t.Run("should create server instance and return server instance", func(t *testing.T) {
-		serverConfig := config_model.HTTPServer{
-			Port: 8090,
-		}
+		serverConfig := config.ReadConfig()
 
-		httpServerInstance := NewHTTPServer(serverConfig)
+		httpServer := NewServer(config)
 
 		serverInstance := &server{}
 
-		assert.NotNil(t, httpServerInstance)
-		assert.IsType(t, serverInstance, httpServerInstance)
+		assert.NotNil(t, httpServer)
+		assert.IsType(t, serverInstance, httpServer)
 	})
 
-	t.Run("should server start and stop without error", func(t *testing.T) {
+	t.Run("should server start and stop without error_producer", func(t *testing.T) {
 		serverConfig := config_model.HTTPServer{
 			Port: 8090,
 		}
 
-		testServer := NewHTTPServer(serverConfig)
+		testServer := NewServer(serverConfig)
 
 		go func() {
 			var err error
@@ -57,12 +55,12 @@ func Test_NewHTTPServer(t *testing.T) {
 		assert.Equal(t, response.StatusCode, fiber.StatusOK)
 	})
 
-	t.Run("should server start and stop return error", func(t *testing.T) {
+	t.Run("should server start and stop return error_producer", func(t *testing.T) {
 		serverConfig := config_model.HTTPServer{
 			Port: -1000,
 		}
 
-		testServer := NewHTTPServer(serverConfig)
+		testServer := NewServer(serverConfig)
 
 		go func() {
 			err := testServer.Start()
@@ -78,7 +76,7 @@ func TestServer_GetFiberInstance(t *testing.T) {
 		Port: 8090,
 	}
 
-	httpServerInstance := NewHTTPServer(serverConfig)
+	httpServerInstance := NewServer(serverConfig)
 	getFiberInstance := httpServerInstance.GetFiberInstance()
 
 	fiberInstance := &fiber.App{}

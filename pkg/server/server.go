@@ -1,14 +1,13 @@
-package http_server
+package server
 
 import (
 	"fmt"
+	"go-rest-api-boilerplate/pkg/config"
 	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/gofiber/fiber/v2"
-
-	config_model "go-rest-api-boilerplate/pkg/config/model"
 )
 
 type Server interface {
@@ -18,20 +17,21 @@ type Server interface {
 }
 
 type server struct {
-	config config_model.HTTPServer
-	fiber  *fiber.App
+	serverPort string
+	fiber      *fiber.App
 }
 
-func NewHTTPServer(serverConfig config_model.HTTPServer) Server {
+func NewServer(config config.Config) Server {
 	fiberConfig := fiber.Config{
 		DisableStartupMessage: true,
 	}
 
 	fiberInstance := fiber.New(fiberConfig)
+	serverPort := config.GetServerPort()
 
 	return &server{
-		config: serverConfig,
-		fiber:  fiberInstance,
+		serverPort: serverPort,
+		fiber:      fiberInstance,
 	}
 }
 
@@ -44,7 +44,7 @@ func (server *server) Start() error {
 		_ = server.fiber.Shutdown()
 	}()
 
-	serverAddress := fmt.Sprintf(":%d", server.config.Port)
+	serverAddress := fmt.Sprintf(":%d", server.serverPort)
 	return server.fiber.Listen(serverAddress)
 }
 
