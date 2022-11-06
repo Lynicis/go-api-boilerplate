@@ -10,7 +10,12 @@ import (
 )
 
 func TestPact_CreateProvider(t *testing.T) {
-	actualProvider := CreateProvider("TestProvider", nil)
+	actualProvider := CreateProvider(
+		"localhost.com",
+		"TestProvider",
+		"TestPactToken",
+		nil,
+	)
 
 	expectedProvider := &types.VerifyRequest{}
 

@@ -24,3 +24,4 @@ coverage_report:
 	go tool cover -html=coverage.out
 
 generate_mock:
+	mockgen --source=pkg/config/config.go --destination=pkg/config/mock/config_mock.go --package=configmock

@@ -11,12 +11,12 @@ import (
 )
 
 func Test_HealthCheckHandler(t *testing.T) {
-	testHTTPServer := fiber.New()
-	testHTTPServer.Get("/health", GetStatus)
+	testServer := fiber.New()
+	testServer.Get("/health", GetStatus)
 
 	request := httptest.NewRequest(fiber.MethodGet, "/health", nil)
-	response, err := testHTTPServer.Test(request, 1)
+	response, err := testServer.Test(request, 1)
 
-	assert.Equal(t, fiber.StatusOK, response.StatusCode)
 	assert.NoError(t, err)
+	assert.Equal(t, fiber.StatusOK, response.StatusCode)
 }

@@ -12,12 +12,12 @@ import (
 
 func TestPact_CreateConsumer(t *testing.T) {
 	actualConsumer := CreateConsumer(
+		"localhost.com",
 		"TestProvider",
 		"TestConsumer",
 	)
 
 	expectedPact := &dsl.Pact{}
 
-	assert.NotNil(t, actualConsumer)
 	assert.IsType(t, expectedPact, actualConsumer)
 }

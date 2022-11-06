@@ -10,8 +10,8 @@ import (
 
 func Test_Path(t *testing.T) {
 	t.Run("should return base path of project", func(t *testing.T) {
-		getBasePath := GetRootDirectory()
+		rootDirectory := GetRootDirectory()
 
-		assert.Regexp(t, "/go-api-boilerplate$", getBasePath)
+		assert.Regexp(t, "/go-api-boilerplate$", rootDirectory)
 	})
 }

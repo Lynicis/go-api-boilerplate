@@ -1,10 +1,14 @@
 package config
 
-const IsAtRemote = "IS_AT_REMOTE"
+import "github.com/pkg/errors"
 
-type Parameter string
+var (
+	EnvironmentVariablesNotDefined = errors.New("environment variables is not defined")
+)
 
 const (
+	IsAtRemote = "IS_AT_REMOTE"
+
 	ServerPort      = "SERVER_PORT"
 	PactBrokerURL   = "PACT_BROKER_URL"
 	PactBrokerToken = "PACT_BROKER_TOKEN"

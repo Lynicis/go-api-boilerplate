@@ -44,7 +44,7 @@ func (server *server) Start() error {
 		_ = server.fiber.Shutdown()
 	}()
 
-	serverAddress := fmt.Sprintf(":%d", server.serverPort)
+	serverAddress := fmt.Sprintf(":%s", server.serverPort)
 	return server.fiber.Listen(serverAddress)
 }
 
