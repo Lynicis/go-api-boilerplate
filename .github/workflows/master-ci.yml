@@ -88,7 +88,13 @@ jobs:
       - uses: ./.github/actions/go-cache
 
       - name: Run tests
-        run: go test -tags=unit ./...
+        run: go test -tags=unit -coverprofile=coverage.out -covermode=atomic ./...
+
+      - name: Upload coverage output as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: code-coverage
+          path: coverage.out
 
   coverage:
     needs:
@@ -98,13 +104,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: ./.github/actions/go-cache
+      - name: Download coverage output
+        uses: actions/download-artifact@v3
+        with:
+          name: code-coverage
 
-      - name: Generate coverage report
-        shell: bash
-        run: go test -tags=unit -coverprofile=coverage.out -covermode=atomic ./...
-
-      - name: Static code analysis
+      - name: Code analysis
         uses: sonarsource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GH_REPO_TOKEN }}
