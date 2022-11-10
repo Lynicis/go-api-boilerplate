@@ -40,7 +40,7 @@ jobs:
       - name: Upload executable file as artifact
         uses: actions/upload-artifact@v3
         with:
-          path: go-api-boilerplate
+          path: ${{ env.APP_NAME }}
           if-no-files-found: error
 
   dockerize:
@@ -58,7 +58,7 @@ jobs:
       - name: Download executable file
         uses: actions/download-artifact@v3
         with:
-          name: $APP_NAME
+          name: ${{ env.APP_NAME }}
 
       - name: Build Docker image
         shell: bash
