@@ -7,7 +7,7 @@ on:
 
 env:
   APP_NAME: ${{ github.event.repository.name }}
-  CONTAINER_REGISTRY_TOKEN: ${{ secrets.GHCR_TOKEN }}
+  CR_TOKEN: ${{ secrets.GHCR_TOKEN }}
 
 jobs:
 
@@ -67,7 +67,7 @@ jobs:
 
       - name: Login to container registry
         shell: bash
-        run: docker login ghcr.io -u $ --password-stdin
+        run: echo $CR_TOKEN | docker login ghcr.io -u $ --password-stdin
 
       - name: Push image to container registry
         shell: bash
@@ -75,7 +75,7 @@ jobs:
           IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$APP_NAME
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
           docker tag $APP_NAME $IMAGE_ID
-          docker push $IMAGE_ID
+          docker push $IMAGE_ID:latest
 
   unit-test:
     needs:
