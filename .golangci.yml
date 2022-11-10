@@ -17,7 +17,6 @@ linters:
     - funlen
     - goimports
     - lll
-    - gosec
     - varnamelen
     - funlen
 

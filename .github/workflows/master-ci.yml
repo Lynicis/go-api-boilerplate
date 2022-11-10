@@ -5,11 +5,9 @@ on:
     branches:
       - master
 
-    tags:
-      - v*
-
 env:
   APP_NAME: ${{ github.event.repository.name }}
+  CONTAINER_REGISTRY_TOKEN: ${{ secrets.GHCR_TOKEN }}
 
 jobs:
 
@@ -18,9 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: actions/setup-go@v3
-        with:
-          go-version: "^1.18.0"
+      - uses: ./github/actions/go-cache
 
       - run: go version
 
@@ -41,13 +37,13 @@ jobs:
 
       - name: Build
         shell: bash
-        run: go build -o $APP_NAME cmd/*.go
+        run: go build -o $APP_NAME ./cmd/**
 
-      - name: Check build file
-        uses: andstor/file-existence-action@v1
+      - name: Upload executable file as artifact
+        uses: actions/upload-artifact@v3
         with:
-          files: ${{ env.APP_NAME }}
-          allow_failure: true
+          path: $APP_NAME
+          if-no-files-found: error
 
   dockerize:
     needs:
@@ -61,26 +57,26 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Download executable file
+        uses: actions/download-artifact@v3
+        with:
+          name: $APP_NAME
+
       - name: Build Docker image
         shell: bash
-        run: |
-          docker build . --file Dockerfile --tag $APP_NAME --label "runnumber=${GITHUB_RUN_ID}"
+        run: docker build . --tag $APP_NAME
 
-      - name: Log in to container registry
+      - name: Login to container registry
         shell: bash
-        run: |
-          echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
+        run: docker login ghcr.io -u $ --password-stdin
 
       - name: Push image to container registry
         shell: bash
         run: |
           IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$APP_NAME
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-          echo IMAGE_ID=$IMAGE_ID
-          echo VERSION=$VERSION
-          docker tag $APP_NAME $IMAGE_ID:$VERSION
-          docker push $IMAGE_ID:$VERSION
+          docker tag $APP_NAME $IMAGE_ID
+          docker push $IMAGE_ID
 
   unit-test:
     needs:
@@ -93,7 +89,6 @@ jobs:
       - uses: ./.github/actions/go-cache
 
       - name: Run tests
-        shell: bash
         run: go test -tags=unit ./...
 
   coverage:
@@ -108,42 +103,16 @@ jobs:
 
       - name: Generate coverage report
         shell: bash
-        run: |
-          go test -tags=unit -coverprofile=coverage.out -covermode=atomic ./...
-
-      - name: Check coverage result file
-        uses: andstor/file-existence-action@v1
-        with:
-          files: "coverage.out"
-          allow_failure: true
-
-      - name: Upload coverage results
-        uses: actions/upload-artifact@v3
-        with:
-          name: coverage-result
-          path: ./coverage.out
-
-  analysis:
-    needs:
-      - coverage
-
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Download artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: coverage-result
-
-      - name: Check coverage result file
-        uses: andstor/file-existence-action@v1
-        with:
-          files: "coverage.out"
-          allow_failure: true
+        run: go test -tags=unit -coverprofile=coverage.out -covermode=atomic ./...
 
       - name: Static code analysis
         uses: sonarsource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GH_REPO_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Quality Gate check
+        uses: sonarsource/sonarqube-quality-gate-action@master
+        timeout-minutes: 5
+        env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
