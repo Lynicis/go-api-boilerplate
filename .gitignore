@@ -1,5 +1,7 @@
 .env
 .idea/
+.fleet/
+.vscode/
 out/
 go-rest-api-boilerplate
 coverage.txt
