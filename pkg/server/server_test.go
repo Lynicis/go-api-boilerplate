@@ -26,7 +26,8 @@ func TestServer(t *testing.T) {
 			).
 			Times(1)
 
-		testServer := NewServer(mockConfig)
+		var handlers []Handler
+		testServer := NewServer(mockConfig, handlers)
 
 		assert.IsType(t, &server{}, testServer)
 	})
@@ -41,7 +42,8 @@ func TestServer(t *testing.T) {
 			).
 			Times(1)
 
-		testServer := NewServer(mockConfig)
+		var handlers []Handler
+		testServer := NewServer(mockConfig, handlers)
 
 		go func() {
 			err := testServer.Start()

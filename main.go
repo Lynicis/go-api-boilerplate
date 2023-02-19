@@ -33,16 +33,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	httpServer := server.NewServer(cfg)
-	fiberInstance := httpServer.GetFiberInstance()
-
-	registerMiddlewares(fiberInstance)
-	registerRoutes(fiberInstance)
+	var handlers []server.Handler
+	httpServer := server.NewServer(cfg, handlers)
 
 	err = httpServer.Start()
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	log.Info("Application Running...")
 }

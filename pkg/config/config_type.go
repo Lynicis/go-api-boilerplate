@@ -6,6 +6,7 @@ var (
 	EnvironmentVariablesNotDefined = errors.New("environment variables is not defined")
 )
 
+// #nosec
 const (
 	IsAtRemote = "IS_AT_REMOTE"
 
