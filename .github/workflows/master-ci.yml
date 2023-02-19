@@ -35,7 +35,7 @@ jobs:
 
       - name: Build
         shell: bash
-        run: go build -o $APP_NAME ./cmd/**
+        run: go build -o $APP_NAME .
 
       - name: Upload executable file as artifact
         uses: actions/upload-artifact@v3

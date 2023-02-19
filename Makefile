@@ -11,7 +11,7 @@ lint:
 	golangci-lint run -v -c .golangci.yml ./...
 
 run:
-	go run cmd/*.go
+	go run .
 
 test:
 	go clean -testcache
