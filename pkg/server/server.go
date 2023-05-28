@@ -8,6 +8,7 @@ import (
 
 	"go-rest-api-boilerplate/pkg/config"
 
+	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -29,7 +30,11 @@ type server struct {
 }
 
 func NewServer(config config.Config, handlers []Handler) Server {
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		DisableStartupMessage: true,
+		JSONEncoder:           json.Marshal,
+		JSONDecoder:           json.Unmarshal,
+	})
 	serverPort := config.GetServerPort()
 
 	return &server{
