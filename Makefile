@@ -10,6 +10,9 @@ security-analysis:
 lint:
 	golangci-lint run -v -c .golangci.yml ./...
 
+dev:
+	air run
+
 run:
 	go run .
 

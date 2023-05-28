@@ -3,6 +3,7 @@
 .fleet/
 .vscode/
 out/
+tmp/
 go-rest-api-boilerplate
 coverage.txt
 coverage.out
