@@ -8,10 +8,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_CreateLogger(t *testing.T) {
-	loggerInstance := CreateLogger()
+func TestNewLogger(t *testing.T) {
+	log := NewLogger()
 
-	expectedLogger := &logger{}
-
-	assert.IsType(t, expectedLogger, loggerInstance)
+	assert.Implements(t, (*Logger)(nil), log)
 }

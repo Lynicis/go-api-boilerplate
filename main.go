@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"os"
 	"path/filepath"
 
@@ -14,8 +15,6 @@ import (
 
 func main() {
 	var err error
-
-	log := logger.CreateLogger()
 
 	isAtRemote := os.Getenv(config.IsAtRemote)
 	if isAtRemote == "" {
@@ -34,9 +33,13 @@ func main() {
 	}
 
 	var handlers []server.Handler
-	httpServer := server.NewServer(cfg, handlers)
+	srv := server.NewServer(cfg, handlers)
+	app := srv.GetFiberInstance()
 
-	err = httpServer.Start()
+	log := logger.NewLogger()
+	app.Use(logger.Middleware(log))
+
+	err = srv.Start()
 	if err != nil {
 		log.Fatal(err)
 	}
