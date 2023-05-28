@@ -19,6 +19,7 @@ type Server interface {
 	GetFiberInstance() *fiber.App
 	Start() error
 	Shutdown() error
+	RegisterRoutes()
 }
 
 type server struct {
@@ -28,12 +29,12 @@ type server struct {
 }
 
 func NewServer(config config.Config, handlers []Handler) Server {
-	fiberInstance := fiber.New()
+	app := fiber.New()
 	serverPort := config.GetServerPort()
 
 	return &server{
 		serverPort: serverPort,
-		fiber:      fiberInstance,
+		fiber:      app,
 		handlers:   handlers,
 	}
 }
@@ -47,7 +48,7 @@ func (server *server) Start() error {
 		_ = server.fiber.Shutdown()
 	}()
 
-	registerRoutes(server.fiber, server.handlers)
+	server.RegisterRoutes()
 
 	serverAddress := fmt.Sprintf(":%s", server.serverPort)
 	return server.fiber.Listen(serverAddress)
@@ -61,8 +62,8 @@ func (server *server) GetFiberInstance() *fiber.App {
 	return server.fiber
 }
 
-func registerRoutes(app *fiber.App, handlers []Handler) {
-	for _, handler := range handlers {
-		handler.RegisterRoutes(app)
+func (server *server) RegisterRoutes() {
+	for _, handler := range server.handlers {
+		handler.RegisterRoutes(server.fiber)
 	}
 }
