@@ -6,13 +6,13 @@ import (
 
 type Logger interface {
 	Desugar() *zap.Logger
-	With(args ...interface{}) *zap.SugaredLogger
+	With(args ...any) *zap.SugaredLogger
 	WithOptions(opts ...zap.Option) *zap.SugaredLogger
 
-	Error(args ...interface{})
-	Info(args ...interface{})
-	Warn(args ...interface{})
-	Fatal(args ...interface{})
+	Error(args ...any)
+	Info(args ...any)
+	Warn(args ...any)
+	Fatal(args ...any)
 }
 
 type logger struct {
@@ -24,12 +24,7 @@ func NewLogger() Logger {
 	if err != nil {
 		panic(err)
 	}
-	defer func(log *zap.Logger) {
-		err := log.Sync()
-		if err != nil {
-			panic(err)
-		}
-	}(log)
+	_ = log.Sync()
 
 	return &logger{
 		log.Sugar(),
