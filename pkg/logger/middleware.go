@@ -23,10 +23,10 @@ func FromContext(ctx context.Context) Logger {
 
 	logger, ok = ctx.Value(ContextKey).(Logger)
 	if !ok {
+		logger = NewLogger()
 		return logger
 	}
 
-	logger = NewLogger()
 	return logger
 }
 
